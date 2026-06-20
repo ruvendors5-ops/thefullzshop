@@ -79,11 +79,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('policyModal').classList.remove('open');
   };
 
-  // Close modals on overlay click
+  // Close modals on overlay click (but not during active payment)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) overlay.classList.remove('open');
+      if (e.target === overlay) {
+        // Don't close if payment step is showing
+        const step2 = document.getElementById('checkoutStep2');
+        if (step2 && step2.classList.contains('active')) return;
+        overlay.classList.remove('open');
+      }
     });
+  });
+
+  // Also prevent ESC key from closing during payment
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const step2 = document.getElementById('checkoutStep2');
+      if (step2 && step2.classList.contains('active')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
   });
 
   // ── Checkout System ──
@@ -192,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Polling state ──
   let paymentPollInterval = null;
   let paymentStartTime = 0;
+  const PAYMENT_EXPIRY_SECS = 1800; // 30 minutes countdown
 
   // Show a BTC address to pay to (inline payment display)
   function showPaymentStep(data) {
@@ -234,8 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="ps-value" id="paymentStatusText" style="color:var(--gold);">⏳ Waiting for payment...</span>
           </div>
           <div class="ps-row">
-            <span class="ps-label">Time Elapsed</span>
-            <span class="ps-value timer-value" id="paymentTimer">0:00</span>
+            <span class="ps-label">Time Remaining</span>
+            <span class="ps-value timer-value" id="paymentTimer">30:00</span>
           </div>
           <div class="ps-row">
             <span class="ps-label">Order ID</span>
@@ -281,12 +298,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await resp.json();
         
-        // Update timer
+        // Update countdown timer
         const elapsed = Math.floor((Date.now() - paymentStartTime) / 1000);
-        const mins = Math.floor(elapsed / 60);
-        const secs = elapsed % 60;
+        const remaining = Math.max(0, PAYMENT_EXPIRY_SECS - elapsed);
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
         const timerEl = document.getElementById('paymentTimer');
-        if (timerEl) timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        if (timerEl) {
+          timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+          if (remaining <= 300 && remaining > 0) timerEl.style.color = '#ffc107'; // yellow < 5min
+          if (remaining <= 60) timerEl.style.color = 'var(--danger)'; // red < 1min
+          if (remaining <= 0) timerEl.style.color = 'var(--danger)';
+        }
         
         // Update status
         const statusEl = document.getElementById('paymentStatusText');
@@ -306,8 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
             statusEl.textContent = '❌ Payment expired — please create a new order';
             statusEl.style.color = 'var(--danger)';
             clearInterval(paymentPollInterval);
-          } else if (elapsed > 3600) {
-            statusEl.textContent = '❌ Payment timeout — contact @efullz for help';
+          } else if (remaining <= 0) {
+            statusEl.textContent = '⌛ Payment window expired — please create a new order';
             statusEl.style.color = 'var(--danger)';
             clearInterval(paymentPollInterval);
           } else {
