@@ -173,7 +173,7 @@
             </div>
             <div class="detail-row-mini">
               <span class="dl-label">Delivery</span>
-              <span class="dl-value" style="color:var(--green);">Instant</span>
+              <span class="dl-value" style="color:var(--green);font-size:0.75rem;"><%= product.deliveryTime || 'Instant' %></span>
             </div>
             <div class="detail-row-mini">
               <span class="dl-label">Payment</span>
@@ -265,6 +265,10 @@
 </section>
 
 <script>
+// ── Product requirements for checkout form ──
+window.productRequirements = <%- JSON.stringify(product.requirements || [{ key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }]) %>;
+window.productId = '<%= product.id %>';
+
 // Copy sample data to clipboard
 function copySample(idx) {
   const el = document.getElementById('sample' + idx);

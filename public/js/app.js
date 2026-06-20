@@ -89,6 +89,61 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Checkout System ──
   let currentCheckout = { product: null, variant: null, price: 0 };
 
+  // Render dynamic checkout fields based on product requirements
+  function renderCheckoutFields(requirements) {
+    const container = document.getElementById('checkoutFields');
+    if (!requirements || requirements.length === 0) {
+      requirements = [{ key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }];
+    }
+    
+    let html = '';
+    requirements.forEach((field, idx) => {
+      const req = field.required ? 'required' : '';
+      const reqStar = field.required ? '<span style="color:var(--danger);">*</span>' : '<span style="color:var(--text-dim);font-size:0.75rem;"> (optional)</span>';
+      const id = `cf_${field.key}`;
+      
+      if (field.type === 'select') {
+        html += `<div class="form-group">
+          <label>${field.label} ${reqStar}</label>
+          <select id="${id}" class="form-input" ${req}>
+            <option value="">Select...</option>
+            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+          </select>
+        </div>`;
+      } else if (field.type === 'textarea') {
+        html += `<div class="form-group">
+          <label>${field.label} ${reqStar}</label>
+          <textarea id="${id}" class="form-input" rows="3" placeholder="${field.placeholder || ''}" ${req}></textarea>
+        </div>`;
+      } else {
+        html += `<div class="form-group">
+          <label>${field.label} ${reqStar}</label>
+          <input type="${field.type}" id="${id}" class="form-input" placeholder="${field.placeholder || ''}" ${req}>
+        </div>`;
+      }
+    });
+    
+    // Add notes field
+    html += `<div class="form-group" style="margin-top:0.5rem;">
+      <label>Additional Notes <span style="color:var(--text-dim);font-size:0.75rem;"> (optional)</span></label>
+      <textarea id="cf_notes" class="form-input" rows="2" placeholder="Any special requests or notes for this order"></textarea>
+    </div>`;
+    
+    container.innerHTML = html;
+  }
+
+  // Collect dynamic field values
+  function getCheckoutFields() {
+    const fields = {};
+    const reqs = window.productRequirements || [];
+    reqs.forEach(field => {
+      const el = document.getElementById(`cf_${field.key}`);
+      if (el) fields[field.key] = el.value.trim();
+    });
+    fields.notes = document.getElementById('cf_notes') ? document.getElementById('cf_notes').value.trim() : '';
+    return fields;
+  }
+
   window.openCheckout = function(productId, variantLabel, price) {
     currentCheckout.product = productId;
     currentCheckout.variant = variantLabel;
@@ -117,6 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
     
+    // Render dynamic fields
+    renderCheckoutFields(window.productRequirements);
+    
     // Reset to step 1
     document.querySelectorAll('.checkout-step').forEach(el => el.classList.remove('active'));
     document.getElementById('checkoutStep1').classList.add('active');
@@ -133,13 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Proceed to payment — creates order via Netlify Function, then redirects
   window.proceedToPayment = async function() {
-    const details = document.getElementById('orderDetails').value.trim();
-    const email = document.getElementById('orderEmail').value.trim();
-    const method = document.getElementById('paymentMethod').value;
+    const fieldData = getCheckoutFields();
+    const reqs = window.productRequirements || [];
     
-    if (!email) {
-      alert('Please enter your email for delivery.');
-      return;
+    // Validate required fields
+    for (const field of reqs) {
+      if (field.required) {
+        const val = fieldData[field.key];
+        if (!val) {
+          alert(`Please fill in "${field.label}" to proceed.`);
+          return;
+        }
+      }
     }
 
     const btn = document.getElementById('payBtn');
@@ -154,8 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
           product: currentCheckout.product,
           variantLabel: currentCheckout.variant,
           price: currentCheckout.price,
-          email,
-          details
+          fields: fieldData,
+          details: fieldData.notes || ''
         })
       });
 
@@ -177,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Redirect to NowPayments checkout
       if (data.demo) {
-        // Demo mode: simulate redirect
         setTimeout(() => {
           window.location.href = data.invoiceUrl;
         }, 1500);
@@ -186,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
     } catch (err) {
+      console.error('Checkout error:', err);
       alert('Connection error. Please try again or contact @efullz on Telegram.');
       btn.disabled = false;
       btn.textContent = `Proceed to Secure Checkout — $${currentCheckout.price}`;
@@ -193,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ── Live Stats ──
-  // Animate counters
+  // Animate counters on page load
   function animateCounter(el) {
     if (!el) return;
     const target = parseInt(el.textContent.replace(/,/g, '')) || 0;
@@ -212,14 +275,36 @@ document.addEventListener('DOMContentLoaded', () => {
     animateCounter(document.getElementById('heroOrders'));
   }, 300);
 
-  // Auto-refresh active users
+  // ── Realistic fluctuating stats ──
+  // Orders completed ticker — increments 5-9 times per day simulation
+  let baseCompleted = parseInt((document.getElementById('footerCompleted') || {}).textContent.replace(/,/g, '')) || 2212;
   setInterval(() => {
-    const active = Math.floor(Math.random() * 10) + 8;
-    const el = document.getElementById('activeNow');
-    const footerEl = document.getElementById('footerActive');
-    if (el) el.textContent = active;
-    if (footerEl) footerEl.textContent = active;
-  }, 15000);
+    // Simulate 5-9 orders completed per "day" — we do it every ~6-10 minutes
+    // to make it look alive on the live site
+    const bump = Math.floor(Math.random() * 5) + 5; // 5-9
+    baseCompleted += bump;
+    const els = [document.getElementById('footerCompleted'), document.getElementById('completedCount')];
+    els.forEach(el => { if (el) el.textContent = baseCompleted.toLocaleString(); });
+    // Also bump total orders
+    const totalEls = [document.getElementById('footerOrders'), document.getElementById('orderCount'), document.getElementById('heroOrders')];
+    totalEls.forEach(el => {
+      if (el) {
+        const cur = parseInt(el.textContent.replace(/,/g, '')) || baseCompleted;
+        el.textContent = (cur + bump).toLocaleString();
+      }
+    });
+  }, 420000 + Math.random() * 180000); // every 7-10 minutes
+
+  // Active users — realistic fluctuation (higher during business hours simulation)
+  setInterval(() => {
+    const hour = new Date().getHours();
+    let base = 8;
+    if (hour >= 10 && hour <= 22) base = 12; // more users during day/evening
+    if (hour >= 18 && hour <= 23) base = 16; // peak at night
+    const active = Math.floor(Math.random() * 6) + base;
+    const els = [document.getElementById('activeNow'), document.getElementById('footerActive')];
+    els.forEach(el => { if (el) el.textContent = active; });
+  }, 18000); // every 18 seconds
 
   console.log('%c💀 The Fullz Shop v2 — Netlify', 'font-size:20px; font-weight:bold; color:#ff0040;');
 });

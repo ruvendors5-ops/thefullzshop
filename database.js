@@ -73,7 +73,11 @@ const PRODUCTS = {
       { bin: '375987', type: 'Amex Platinum', bank: 'Amex' },
     ],
     tags: ['fullz', 'fullz with ssn', 'fullz shop', 'buy fullz', 'carding fullz', 'ssn dob fullz', 'fullz vendor', 'fullz for sale'],
-    terms: 'All data double-checked for validity before delivery. Fresh batch updated weekly. Bulk pricing available at volume.'
+    terms: 'All data double-checked for validity before delivery. Fresh batch updated weekly. Bulk pricing available at volume.',
+    deliveryTime: 'Instant — delivered to your email within 5 minutes of payment confirmation',
+    requirements: [
+      { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }
+    ]
   },
 
   // ===== [02] STANDARD CCs =====
@@ -110,7 +114,11 @@ const PRODUCTS = {
       }
     ],
     tags: ['cc shop', 'cvv shop', 'buy cc online', 'buy cvv', 'valid cc', 'non vbv cc', 'credit card dumps', 'cc vendor', 'best cvv shop', 'cheap cvv'],
-    terms: 'Non-VBV bins available on request. Updated daily with fresh cards. Bulk reseller pricing available.'
+    terms: 'Non-VBV bins available on request. Updated daily with fresh cards. Bulk reseller pricing available.',
+    deliveryTime: 'Instant — delivered to your email within 5 minutes of payment confirmation',
+    requirements: [
+      { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }
+    ]
   },
 
   // ===== [03] DUMPS TRACK 1/2 + PIN =====
@@ -145,7 +153,11 @@ const PRODUCTS = {
       }
     ],
     tags: ['dumps shop', 'dumps with pin', 'buy dumps', 'track 1/2 dumps', 'emv dumps', 'dumps pin vendor', 'card dumps', 'dumps track 2', 'buy dumps online'],
-    terms: 'EMV data requires proper equipment & blank cards. US $120-200, UK $150-250, CA $120-190, EU $140-220, INTL $100-180 depending on balance.'
+    terms: 'EMV data requires proper equipment & blank cards. US $120-200, UK $150-250, CA $120-190, EU $140-220, INTL $100-180 depending on balance.',
+    deliveryTime: 'Instant — track data sent to your email within 5 minutes of payment confirmation',
+    requirements: [
+      { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }
+    ]
   },
 
   // ===== [04] BANK LOGS =====
@@ -208,7 +220,11 @@ const PRODUCTS = {
       }
     ],
     tags: ['bank logs', 'buy bank logs', 'bank logins', 'bank logs for sale', 'bank log vendor', 'hacked bank accounts', 'bank login access', 'chase bank logs', 'wells fargo logs'],
-    terms: 'Full bank login credentials with email access. MFA can be handled. SIM swap accounts available. Fresh batch #ATLAS-0626-01 from 18 June 2026.'
+    terms: 'Full bank login credentials with email access. MFA can be handled. SIM swap accounts available. Fresh batch #ATLAS-0626-01 from 18 June 2026.',
+    deliveryTime: 'Instant — login credentials emailed within 5 minutes of payment confirmation',
+    requirements: [
+      { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }
+    ]
   },
 
   // ===== [05] CASHAPP TRANSFERS =====
@@ -228,7 +244,12 @@ const PRODUCTS = {
       { label: '$25,000 Load', price: 1100 },
     ],
     tags: ['cashapp transfer', 'cashapp load', 'cashapp money transfer', 'cashapp hack', 'cashapp flip', 'cashapp vendor', 'cashapp balance'],
-    terms: 'Delivery within 5-30 minutes. Clean funded accounts with transaction history. No chargeback risk.'
+    terms: 'Delivery within 5-30 minutes. Clean funded accounts with transaction history. No chargeback risk.',
+    deliveryTime: 'Instant — usually 5-30 minutes. Most transfers complete within 12 minutes.',
+    requirements: [
+      { key: 'cashtag', label: 'Your CashApp $Cashtag', type: 'text', placeholder: '$YourTag', required: true },
+      { key: 'email', label: 'Email (for order confirmation)', type: 'email', placeholder: 'your@email.com', required: false }
+    ]
   },
 
   // ===== [06] PAYPAL TRANSFERS =====
@@ -248,7 +269,13 @@ const PRODUCTS = {
       { label: '$25,000 Transfer', price: 1350 },
     ],
     tags: ['paypal transfer', 'hacked paypal', 'paypal balance transfer', 'paypal vendor', 'buy paypal', 'paypal money transfer', 'paypal hack'],
-    terms: 'F&F or G&S (your choice). US/UK/EU/AU accounts aged 3yr+. Transferred from verified accounts with full history.'
+    terms: 'F&F or G&S (your choice). US/UK/EU/AU accounts aged 3yr+. Transferred from verified accounts with full history.',
+    deliveryTime: 'Instant — usually 10-60 minutes. Most transfers complete within 30 minutes.',
+    requirements: [
+      { key: 'paypal_email', label: 'Your PayPal Email', type: 'email', placeholder: 'your-paypal@email.com', required: true },
+      { key: 'paypal_type', label: 'Transfer Type', type: 'select', options: ['Friends & Family', 'Goods & Services'], required: true },
+      { key: 'email', label: 'Email (for order confirmation)', type: 'email', placeholder: 'your@email.com', required: false }
+    ]
   },
 
   // ===== [07] VENMO TRANSFERS =====
@@ -267,7 +294,12 @@ const PRODUCTS = {
       { label: '$10,000 Transfer', price: 500 },
     ],
     tags: ['venmo transfer', 'venmo money transfer', 'venmo load', 'venmo vendor', 'venmo hack', 'venmo balance', 'send money venmo'],
-    terms: 'Instant transfer. Clean accounts with transaction history. No chargeback risk.'
+    terms: 'Instant transfer. Clean accounts with transaction history. No chargeback risk.',
+    deliveryTime: 'Instant — usually 10-30 minutes. Most transfers complete within 20 minutes.',
+    requirements: [
+      { key: 'venmo_contact', label: 'Your Venmo Email or Username', type: 'text', placeholder: 'venmo@email.com or @username', required: true },
+      { key: 'email', label: 'Email (for order confirmation)', type: 'email', placeholder: 'your@email.com', required: false }
+    ]
   },
 
   // ===== [08] WIRE / ACH / WU / MG =====
@@ -287,7 +319,15 @@ const PRODUCTS = {
       { label: 'MoneyGram', price: 100, note: '+ 12% fee' },
     ],
     tags: ['western union transfer', 'wire transfer', 'ach transfer', 'money gram', 'wu hack', 'mtcn code', 'bank transfer service', 'send money anonymously'],
-    terms: 'Domestic wire: $75 + 6%. International wire: $150 + 10%. ACH: $50 + 5%. WU/MG: $100 + 12%. MTCN generated within 2 hours for WU.'
+    terms: 'Domestic wire: $75 + 6%. International wire: $150 + 10%. ACH: $50 + 5%. WU/MG: $100 + 12%. MTCN generated within 2 hours for WU.',
+    deliveryTime: 'Domestic wire & ACH: 2-6 hours. International wire: 6-24 hours. WU/MG: MTCN in 2 hours, pickup ready within 4 hours.',
+    requirements: [
+      { key: 'sender_name', label: 'Sender Full Name', type: 'text', placeholder: 'John Doe', required: true },
+      { key: 'receiver_info', label: 'Receiver Details (name, location, bank)', type: 'textarea', placeholder: 'Receiver name, city/country, bank name (if wire)', required: true },
+      { key: 'transfer_amount', label: 'Transfer Amount ($)', type: 'number', placeholder: 'e.g. 5000', required: true },
+      { key: 'transfer_type', label: 'Transfer Method', type: 'select', options: ['Domestic Wire', 'International Wire', 'ACH Transfer', 'Western Union', 'MoneyGram'], required: true },
+      { key: 'email', label: 'Email (for tracking updates)', type: 'email', placeholder: 'your@email.com', required: true }
+    ]
   },
 
   // ===== [09] SHOP LOGINS =====
@@ -307,7 +347,12 @@ const PRODUCTS = {
       { label: 'Nike / Adidas / Supreme', price: 30, note: '$30-60' },
     ],
     tags: ['shop logins', 'amazon accounts', 'ebay accounts', 'walmart logins', 'shop login vendor', 'gift card balance', 'hacked shop accounts'],
-    terms: 'Prices vary by account balance and age. Amazon gift balance: $75-250. eBay aged 5yr+: $50-120. Walmart saved cards: $45-90. Nike/Adidas/Supreme: $30-60.'
+    terms: 'Prices vary by account balance and age. Amazon gift balance: $75-250. eBay aged 5yr+: $50-120. Walmart saved cards: $45-90. Nike/Adidas/Supreme: $30-60.',
+    deliveryTime: 'Instant — login credentials emailed within 10 minutes of payment confirmation.',
+    requirements: [
+      { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true },
+      { key: 'preferences', label: 'Preferred Platform / Specific Requests', type: 'text', placeholder: 'e.g. Amazon with $200+ balance', required: false }
+    ]
   },
 
   // ===== [10] CRYPTO =====
@@ -326,7 +371,12 @@ const PRODUCTS = {
       { label: 'Crypto Off-Ramp Service', price: 0, note: '12-18% fee' },
     ],
     tags: ['crypto accounts', 'binance verified', 'coinbase verified', 'crypto vendor', 'buy crypto account', 'off ramp crypto', 'crypto to fiat', 'kraken account'],
-    terms: 'Binance Verified (w/ trading history): $200-500. Coinbase Verified (aged): $150-400. Kraken/Bybit/KuCoin: $120-350. Crypto off-ramping service: 12-18% fee.'
+    terms: 'Binance Verified (w/ trading history): $200-500. Coinbase Verified (aged): $150-400. Kraken/Bybit/KuCoin: $120-350. Crypto off-ramping service: 12-18% fee.',
+    deliveryTime: 'Digital accounts: instant delivery. Off-ramp service: 24-48 hours depending on amount.',
+    requirements: [
+      { key: 'email', label: 'Email for Delivery / Communication', type: 'email', placeholder: 'your@email.com', required: true },
+      { key: 'service_type', label: 'Service Type', type: 'select', options: ['Binance Account', 'Coinbase Account', 'Kraken/Bybit/KuCoin', 'Crypto Off-Ramp'], required: true }
+    ]
   }
 };
 

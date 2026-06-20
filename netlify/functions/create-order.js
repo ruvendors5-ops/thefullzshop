@@ -17,9 +17,9 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers };
 
   try {
-    const { product, variantLabel, price, email, details } = JSON.parse(event.body);
+    const { product, variantLabel, price, fields, details } = JSON.parse(event.body);
     
-    if (!product || !variantLabel || !price || !email) {
+    if (!product || !variantLabel || !price) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing required fields' }) };
     }
 
@@ -27,14 +27,13 @@ exports.handler = async (event) => {
     const orderId = 'TFS-' + Math.random().toString(36).slice(2, 8).toUpperCase();
     
     // Store order data in response (for stateless tracking)
-    // In production, use Netlify Blobs or a database here
     const orderData = {
       id: orderId,
       product,
       variant: variantLabel,
       totalUSD: price,
-      email,
-      details,
+      fields: fields || {},
+      details: details || '',
       status: 'pending',
       createdAt: Date.now()
     };
@@ -55,7 +54,7 @@ exports.handler = async (event) => {
           price_currency: 'usd',
           pay_currency: 'btc',
           order_id: orderId,
-          order_description: `${product} - ${variantLabel} | ${email}`,
+          order_description: `${product} - ${variantLabel} | ${fields && fields.email ? fields.email : 'BTC order'}`,
           ipn_callback_url: `${SITE_URL}/.netlify/functions/payment-callback`,
           success_url: `${SITE_URL}/order/?id=${orderId}`,
           cancel_url: `${SITE_URL}/order/?id=${orderId}&status=cancel`,
