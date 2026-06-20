@@ -103,14 +103,8 @@
           </button>
           <p class="pm-note" style="text-align:center;margin-top:0.75rem;">BTC only. You'll be redirected to our secure payment processor. Come BTC ready.</p>
         </div>
-        <div id="checkoutStep2" class="checkout-step" style="text-align:center;padding:2rem 0;">
-          <div style="font-size:3rem;margin-bottom:1rem;">🔄</div>
-          <h3>Redirecting to Payment...</h3>
-          <p style="color:var(--text-secondary);margin:1rem 0;">Please wait while we prepare your secure checkout page.</p>
-          <div class="progress-bar" style="max-width:300px;margin:1.5rem auto;">
-            <div class="progress-fill" style="width:100%;"></div>
-          </div>
-          <p style="font-size:0.8rem;color:var(--text-dim);">Not redirected? <a href="#" id="manualRedirectLink">Click here</a></p>
+        <div id="checkoutStep2" class="checkout-step">
+          <div id="paymentDisplay"></div>
         </div>
       </div>
     </div>

@@ -1,67 +1,64 @@
-// ── Check Payment — Netlify Function ──
-// Checks order payment status. In demo mode, auto-confirms after first check.
-// In live mode, queries NowPayments API.
+// ── Check Payment Status — Netlify Function ──
+// Polls NowPayments API for payment status by payment_id
 
 const fetch = require('node-fetch');
-
 const NOWPAYMENTS_API_KEY = process.env.NOWPAYMENTS_API_KEY || '';
-
-// In-memory store for demo orders (resets on function cold start)
-// In production, use Netlify Blobs or a database
-const orderStore = {};
 
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
 
-  const orderId = event.queryStringParameters?.id;
-  if (!orderId) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing order ID' }) };
-  }
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers };
 
-  // Demo mode: simulate payment confirmation
-  // First check returns "awaiting", subsequent checks return "delivered"
-  if (!orderStore[orderId]) {
-    orderStore[orderId] = { checkCount: 0, status: 'awaiting', product: 'Fullz', variant: 'US Fullz', totalUSD: 80 };
-  }
-
-  const order = orderStore[orderId];
-  order.checkCount++;
-
-  let status = order.status;
-  let product = order.product;
-  let variant = order.variant;
-  let totalUSD = order.totalUSD;
-
-  // In demo mode, after 3 checks (≈15 seconds) mark as delivered
-  if (!NOWPAYMENTS_API_KEY) {
-    if (order.checkCount >= 3 && order.status === 'awaiting') {
-      order.status = 'delivered';
-      status = 'delivered';
+  try {
+    const { paymentId } = JSON.parse(event.body);
+    
+    if (!paymentId) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing paymentId' }) };
     }
-  } else {
-    // Live mode — check NowPayments API
-    // (In production, the webhook would update the order status)
-    try {
-      // For now, just return the stored status
-      // The webhook handler updates this
-    } catch (err) {
-      console.error('[check-payment] API error:', err);
-    }
-  }
 
-  return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify({
-      id: orderId,
-      status: order.status,
-      product,
-      variant,
-      totalUSD,
-      deliveredAt: order.deliveredAt || null
-    })
-  };
+    // Demo mode — simulate payment after some time
+    if (paymentId.startsWith('demo_')) {
+      const createdAt = parseInt(paymentId.split('_')[1]) || Date.now();
+      const elapsed = Date.now() - createdAt;
+      const simulatedPaid = elapsed > 120000; // 2 minutes demo wait
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          payment_status: simulatedPaid ? 'finished' : 'waiting',
+          paymentId,
+          actually_paid: simulatedPaid ? 1 : 0
+        })
+      };
+    }
+
+    // Live mode — poll NowPayments
+    const resp = await fetch(`https://api.nowpayments.io/v1/payment/${paymentId}`, {
+      headers: {
+        'x-api-key': NOWPAYMENTS_API_KEY
+      }
+    });
+
+    const data = await resp.json();
+    
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        payment_status: data.payment_status || 'unknown',
+        paymentId: data.payment_id,
+        actually_paid: data.actually_paid || 0,
+        pay_address: data.pay_address
+      })
+    };
+
+  } catch (err) {
+    console.error('[check-payment] Error:', err);
+    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
+  }
 };

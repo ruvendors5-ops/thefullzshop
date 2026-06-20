@@ -189,7 +189,144 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('checkoutModal').classList.remove('open');
   };
 
-  // Proceed to payment — creates order via Netlify Function, then redirects
+  // ── Polling state ──
+  let paymentPollInterval = null;
+  let paymentStartTime = 0;
+
+  // Show a BTC address to pay to (inline payment display)
+  function showPaymentStep(data) {
+    document.querySelectorAll('.checkout-step').forEach(el => el.classList.remove('active'));
+    document.getElementById('checkoutStep2').classList.add('active');
+    
+    const btcAmount = parseFloat(data.payAmount).toFixed(8);
+    paymentStartTime = Date.now();
+    
+    document.getElementById('paymentDisplay').innerHTML = `
+      <div class="payment-container">
+        <div class="payment-header">
+          <span class="badge badge-lg">₿ Pay with Bitcoin</span>
+          ${data.demo ? '<span class="badge badge-lg" style="background:rgba(255,193,7,0.2);color:#ffc107;">⚡ DEMO MODE</span>' : ''}
+        </div>
+        
+        <div class="payment-amount-box">
+          <div class="pa-label">Send Exactly</div>
+          <div class="pa-btc">${btcAmount} <span class="pa-btc-label">BTC</span></div>
+          <div class="pa-usd">≈ $${data.priceAmount} USD</div>
+        </div>
+        
+        <div class="payment-address-box">
+          <div class="pa-label">To This Bitcoin Address</div>
+          <div class="pa-addr-row">
+            <input type="text" class="pa-addr-input" id="btcAddress" value="${data.payAddress}" readonly>
+            <button class="btn btn-secondary" onclick="copyBTCAddress()">📋 Copy</button>
+          </div>
+        </div>
+        
+        <div class="payment-qr">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=bitcoin:${data.payAddress}?amount=${btcAmount}" 
+               alt="BTC QR Code" class="qr-img" loading="lazy">
+          <p class="qr-hint">Scan with your crypto wallet</p>
+        </div>
+        
+        <div class="payment-status-box" id="paymentStatusBox">
+          <div class="ps-row">
+            <span class="ps-label">Status</span>
+            <span class="ps-value" id="paymentStatusText" style="color:var(--gold);">⏳ Waiting for payment...</span>
+          </div>
+          <div class="ps-row">
+            <span class="ps-label">Time Elapsed</span>
+            <span class="ps-value timer-value" id="paymentTimer">0:00</span>
+          </div>
+          <div class="ps-row">
+            <span class="ps-label">Order ID</span>
+            <span class="ps-value mono">${data.orderId}</span>
+          </div>
+        </div>
+        
+        <div class="payment-note">
+          <p>Send the exact amount shown above to the BTC address. The payment will be detected automatically after 1 network confirmation.</p>
+          <p>${data.demo ? '⚡ Demo: payment will auto-confirm in ~2 minutes for testing.' : ''}</p>
+        </div>
+        
+        <a href="/order/?id=${data.orderId}" class="btn btn-outline btn-block" style="margin-top:1rem;">Track Order Status →</a>
+      </div>
+    `;
+    
+    // Start polling for payment
+    startPaymentPolling(data.paymentId);
+  }
+
+  // Copy BTC address
+  window.copyBTCAddress = function() {
+    const el = document.getElementById('btcAddress');
+    if (!el) return;
+    navigator.clipboard.writeText(el.value).then(() => {
+      const btn = el.nextElementSibling;
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  };
+
+  // Poll payment status
+  async function startPaymentPolling(paymentId) {
+    if (paymentPollInterval) clearInterval(pollInterval);
+    
+    const checkStatus = async () => {
+      try {
+        const resp = await fetch('/.netlify/functions/check-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentId })
+        });
+        const data = await resp.json();
+        
+        // Update timer
+        const elapsed = Math.floor((Date.now() - paymentStartTime) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        const secs = elapsed % 60;
+        const timerEl = document.getElementById('paymentTimer');
+        if (timerEl) timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        
+        // Update status
+        const statusEl = document.getElementById('paymentStatusText');
+        if (statusEl) {
+          if (data.payment_status === 'finished' || data.actually_paid > 0) {
+            statusEl.textContent = '✅ Payment received! Redirecting...';
+            statusEl.style.color = 'var(--green)';
+            clearInterval(paymentPollInterval);
+            setTimeout(() => {
+              const id = paymentId.replace('demo_', '');
+              window.location.href = `/order/?id=${id}&status=success`;
+            }, 1500);
+          } else if (data.payment_status === 'partially_paid') {
+            statusEl.textContent = '⚠️ Partial payment detected — waiting for full amount';
+            statusEl.style.color = '#ffc107';
+          } else if (data.payment_status === 'expired') {
+            statusEl.textContent = '❌ Payment expired — please create a new order';
+            statusEl.style.color = 'var(--danger)';
+            clearInterval(paymentPollInterval);
+          } else if (elapsed > 3600) {
+            statusEl.textContent = '❌ Payment timeout — contact @efullz for help';
+            statusEl.style.color = 'var(--danger)';
+            clearInterval(paymentPollInterval);
+          } else {
+            // Still waiting
+            const dots = '.'.repeat((Math.floor(elapsed / 3) % 3) + 1);
+            statusEl.textContent = `⏳ Waiting for payment${dots}`;
+          }
+        }
+      } catch (err) {
+        console.error('Poll error:', err);
+      }
+    };
+    
+    // Check immediately and then every 5 seconds
+    checkStatus();
+    paymentPollInterval = setInterval(checkStatus, 5000);
+  }
+
+  // Proceed to payment — creates order, shows BTC address inline
   window.proceedToPayment = async function() {
     const fieldData = getCheckoutFields();
     const reqs = window.productRequirements || [];
@@ -207,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const btn = document.getElementById('payBtn');
     btn.disabled = true;
-    btn.textContent = '⏳ Creating Invoice...';
+    btn.textContent = '⏳ Creating Payment...';
 
     try {
       const resp = await fetch('/.netlify/functions/create-order', {
@@ -231,21 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Show redirecting state
-      document.querySelectorAll('.checkout-step').forEach(el => el.classList.remove('active'));
-      document.getElementById('checkoutStep2').classList.add('active');
-      
-      // Set manual redirect link
-      document.getElementById('manualRedirectLink').href = data.invoiceUrl;
-
-      // Redirect to NowPayments checkout
-      if (data.demo) {
-        setTimeout(() => {
-          window.location.href = data.invoiceUrl;
-        }, 1500);
-      } else {
-        window.location.href = data.invoiceUrl;
-      }
+      // Show the BTC payment step
+      showPaymentStep(data);
 
     } catch (err) {
       console.error('Checkout error:', err);
