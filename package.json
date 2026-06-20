@@ -1,0 +1,15 @@
+{
+  "name": "thefullzshop",
+  "version": "2.0.0",
+  "description": "The Fullz Shop — Netlify Edition",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js && npx serve dist"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "ejs": "^3.1.9",
+    "node-fetch": "^2.7.0",
+    "uuid": "^14.0.1"
+  }
+}

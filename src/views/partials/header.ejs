@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof seo !== 'undefined' && seo.title ? seo.title : 'The Fullz Shop ★ CVV Shop — Buy Fullz Online, CC, Dumps, Bank Logs | Atlas Trade Group' %></title>
+  <meta name="description" content="<%= typeof seo !== 'undefined' && seo.description ? seo.description : 'Premium fullz shop since 2022. Buy CC online, fullz with SSN DOB, bank logs, dumps with PIN, cashapp & paypal transfers. BTC only. Fresh stock daily.' %>">
+  <% if (typeof seo !== 'undefined' && seo.keywords) { %>
+  <meta name="keywords" content="<%= seo.keywords %>">
+  <% } %>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://thefullz.shop/<%= typeof pageId !== 'undefined' && pageId ? pageId : '' %>">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="<%= typeof seo !== 'undefined' && seo.title ? seo.title : 'The Fullz Shop' %>">
+  <meta property="og:description" content="<%= typeof seo !== 'undefined' && seo.description ? seo.description : 'Premium fullz marketplace' %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thefullz.shop/">
+  
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>💀</text></svg>">
+  
+  <!-- Schema.org markup for shop -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "The Fullz Shop",
+    "description": "Premium carding and financial services marketplace. Fullz, CCs, dumps, bank logs, transfers.",
+    "url": "https://thefullz.shop",
+    "brand": { "@type": "Brand", "name": "Atlas Trade Group" }
+  }
+  </script>
+</head>
+<body>
+  <!-- Status Bar -->
+  <div class="trust-bar">
+    <div class="container trust-bar-inner">
+      <div class="trust-item">
+        <span class="trust-icon">🛡️</span>
+        <span>Atlas Trade Group — Est. 2019 — Trusted by <strong id="orderCount">2,470</strong>+ buyers</span>
+      </div>
+      <div class="trust-item desktop-only">
+        <span class="trust-icon">✅</span>
+        <span><strong id="completedCount">2,212</strong> orders completed</span>
+      </div>
+      <div class="trust-item desktop-only">
+        <span class="trust-icon">👤</span>
+        <span><strong id="activeNow">14</strong> buyers online now</span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon">₿</span>
+        <span>BTC Only — Come Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">💀</span>
+        <span class="logo-text">
+          <span class="logo-title">THE FULLZ SHOP</span>
+          <span class="logo-sub">By Atlas Trade Group ★ Est. 2019 ★ BTC Only</span>
+        </span>
+        <span class="verified-badge">✓ VERIFIED</span>
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-list">
+          <li><a href="/" class="<%= typeof pageId === 'undefined' ? 'active' : '' %>">Home</a></li>
+          <li><a href="/fullz" class="<%= typeof pageId !== 'undefined' && pageId === 'fullz' ? 'active' : '' %>">Fullz</a></li>
+          <li><a href="/ccs" class="<%= typeof pageId !== 'undefined' && pageId === 'ccs' ? 'active' : '' %>">CCs</a></li>
+          <li><a href="/dumps" class="<%= typeof pageId !== 'undefined' && pageId === 'dumps' ? 'active' : '' %>">Dumps</a></li>
+          <li><a href="/banklogs" class="<%= typeof pageId !== 'undefined' && pageId === 'banklogs' ? 'active' : '' %>">Bank Logs</a></li>
+          <li><a href="/cashapp" class="<%= typeof pageId !== 'undefined' && pageId === 'cashapp' ? 'active' : '' %>">CashApp</a></li>
+          <li><a href="/paypal" class="<%= typeof pageId !== 'undefined' && pageId === 'paypal' ? 'active' : '' %>">PayPal</a></li>
+          <li><a href="/venmo" class="<%= typeof pageId !== 'undefined' && pageId === 'venmo' ? 'active' : '' %>">Venmo</a></li>
+          <li><a href="/wu" class="<%= typeof pageId !== 'undefined' && pageId === 'wu' ? 'active' : '' %>">Wire/WU</a></li>
+          <li><a href="/zelle" class="<%= typeof pageId !== 'undefined' && pageId === 'zelle' ? 'active' : '' %>">Shops</a></li>
+          <li><a href="/cloned" class="<%= typeof pageId !== 'undefined' && pageId === 'cloned' ? 'active' : '' %>">Crypto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <div class="ticker-item">🔔 Fresh batch #ATLAS-0626-01 — 18 June 2026 — All regions stocked</div>
+      <div class="ticker-item">₿ BTC ONLY — Come ready or don't come at all</div>
+      <div class="ticker-item">⭐ <strong>4.9/5</strong> — Based on <strong>1,247</strong> verified buyer reviews</div>
+      <div class="ticker-item">📦 <strong>NEW</strong> — Bank logs batch: Chase $47k, Wells $124k, BOA $238k</div>
+      <div class="ticker-item">🏦 30+ banks available across US, UK, CA — Full login + email access</div>
+      <div class="ticker-item">🔔 Atlas Trade Group — Est. 2019 — We move product. Discreetly.</div>
+    </div>
+  </div>
+
+  <main class="main-content">

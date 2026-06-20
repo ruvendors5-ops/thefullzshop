@@ -1,0 +1,126 @@
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <h4>Atlas Trade Group</h4>
+        <p>Premium carding and financial services marketplace operating since 2019. Fullz, CCs, dumps with PIN, bank logs, transfers, shop logins, and crypto services. We move product. Discreetly.</p>
+        <div class="footer-badges">
+          <span class="badge">✓ Est. 2019</span>
+          <span class="badge">✓ BTC Only</span>
+          <span class="badge">✓ Wholesale & Retail</span>
+          <span class="badge">✓ 24/7 Support</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="/fullz">CC FULLZ — Complete Identity + Card</a></li>
+          <li><a href="/ccs">Standard CCs — Billing Info</a></li>
+          <li><a href="/dumps">Dumps Track 1/2 + PIN</a></li>
+          <li><a href="/banklogs">Bank Logs — All Major Banks</a></li>
+          <li><a href="/cashapp">CashApp Transfers</a></li>
+          <li><a href="/paypal">PayPal Transfers</a></li>
+          <li><a href="/venmo">Venmo Transfers</a></li>
+          <li><a href="/wu">Wire / ACH / WU / MG</a></li>
+          <li><a href="/zelle">Shop Logins</a></li>
+          <li><a href="/cloned">Crypto Services</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul>
+          <li><a href="#" onclick="showPolicy('refund')">Refund & Replacement Policy</a></li>
+          <li><a href="#" onclick="showPolicy('shipping')">Shipping & Delivery</a></li>
+          <li><a href="#" onclick="showPolicy('privacy')">Privacy & Security</a></li>
+          <li><a href="#" onclick="showPolicy('faq')">FAQ</a></li>
+        </ul>
+        <div class="footer-contact">
+          <p><strong>Contact:</strong></p>
+          <p>Telegram: <a href="https://t.me/efullz" target="_blank">@efullz</a> (Fastest — reply within mins)</p>
+          <p>Telegram #: +1 208 795 8997</p>
+          <p>Email: ru.vendors5@gmail.com</p>
+          <p>PGP: 3A4B 7C8D 9E0F 1A2B 3C4D 5E6F 7A8B 9C0D 1E2F 3A4B</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Live Stats</h4>
+        <div class="live-stats">
+          <div class="stat">
+            <span class="stat-value" id="footerOrders"><%= totalOrders %></span>
+            <span class="stat-label">Total Orders</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="footerCompleted"><%= completedOrders %></span>
+            <span class="stat-label">Completed</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">97.8%</span>
+            <span class="stat-label">Success Rate</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="footerActive"><%= activeNow %></span>
+            <span class="stat-label">Online Now</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; <%= currentYear %> Atlas Trade Group / The Fullz Shop @efullz | BTC Only — Come Ready | EST. 2019</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Policy Modal -->
+  <div class="modal-overlay" id="policyModal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="policyTitle">Policy</h3>
+        <button class="modal-close" onclick="closePolicy()">&times;</button>
+      </div>
+      <div class="modal-body" id="policyBody"></div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="checkoutTitle">Complete Your Order</h3>
+        <button class="modal-close" onclick="closeCheckout()">&times;</button>
+      </div>
+      <div class="modal-body" id="checkoutBody">
+        <div id="checkoutStep1" class="checkout-step active">
+          <h3>Confirm Your Order</h3>
+          <div class="order-summary" id="orderSummary"></div>
+          <div class="form-group">
+            <label>Additional Details / Requirements</label>
+            <textarea id="orderDetails" rows="3" placeholder="e.g., New York state, Chase bank preferred, specific BIN, etc."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Email for Delivery</label>
+            <input type="email" id="orderEmail" placeholder="your@email.com" required>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="proceedToPayment()" id="payBtn">
+            Proceed to Secure Checkout — <span id="checkoutTotal">$0</span>
+          </button>
+          <p class="pm-note" style="text-align:center;margin-top:0.75rem;">BTC only. You'll be redirected to our secure payment processor. Come BTC ready.</p>
+        </div>
+        <div id="checkoutStep2" class="checkout-step" style="text-align:center;padding:2rem 0;">
+          <div style="font-size:3rem;margin-bottom:1rem;">🔄</div>
+          <h3>Redirecting to Payment...</h3>
+          <p style="color:var(--text-secondary);margin:1rem 0;">Please wait while we prepare your secure checkout page.</p>
+          <div class="progress-bar" style="max-width:300px;margin:1.5rem auto;">
+            <div class="progress-fill" style="width:100%;"></div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-dim);">Not redirected? <a href="#" id="manualRedirectLink">Click here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

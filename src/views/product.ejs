@@ -1,0 +1,282 @@
+<%- include('partials/header', { seo, pageId, totalOrders, completedOrders, activeNow, reviews, currentYear, recentOrders }) %>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="container">
+    <div class="hero-badges" style="margin-bottom:1rem;">
+      <span class="badge badge-lg">★ Atlas Trade Group</span>
+      <span class="badge badge-lg">✓ Est. 2019</span>
+      <span class="badge badge-lg">₿ BTC Only</span>
+      <span class="badge badge-lg">✓ <%= product.name %></span>
+    </div>
+    <h1><span class="highlight"><%= product.name %></span></h1>
+    <p class="hero-subtitle" style="color:var(--gold);font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;"><%= product.subtitle %></p>
+    <p class="hero-desc"><%= product.longDesc %></p>
+    <div class="hero-badges">
+      <span class="badge badge-lg">✓ Fresh Batch <%= new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }) %></span>
+      <span class="badge badge-lg">✓ Instant Digital Delivery</span>
+      <span class="badge badge-lg">✓ Replacement Within 24h</span>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<section class="section">
+  <div class="container">
+
+    <!-- Pricing Grid + Sidebar -->
+    <div class="product-grid">
+      <div>
+        <!-- Pricing Cards -->
+        <div class="section-subheader">
+          <h2>💰 Pricing — <%= product.priceLabel %></h2>
+        </div>
+        <div class="product-cards">
+          <% product.variants.forEach((variant) => { %>
+          <div class="card product-card">
+            <div class="card-badge"><%= variant.label %></div>
+            <div class="card-body">
+              <div class="card-price">
+                <span class="price-currency">$</span>
+                <span class="price-amount"><%= variant.price %></span>
+              </div>
+              <% if (variant.note) { %>
+              <p style="font-size:0.75rem;color:var(--text-dim);text-align:center;margin-bottom:0.75rem;"><%= variant.note %></p>
+              <% } %>
+              <div class="card-meta">
+                <span class="meta-item">✓ Fresh & Valid</span>
+                <span class="meta-item">✓ Instant Delivery</span>
+                <span class="meta-item">✓ 24h Replacement</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="openCheckout('<%= product.id %>', '<%= variant.label %>', <%= variant.price %>)">
+                Buy Now — $<%= variant.price %>
+              </button>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
+        <!-- Bulk Pricing -->
+        <% if (product.bulkPricing) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>📦 Bulk / Wholesale Pricing</h2>
+        </div>
+        <div class="bulk-grid">
+          <% product.bulkPricing.forEach((bp) => { %>
+          <div class="bulk-card">
+            <div class="bulk-qty"><%= bp.qty %></div>
+            <div class="bulk-label"><%= bp.label %></div>
+            <div class="bulk-price">$<%= bp.price.toLocaleString() %></div>
+            <div class="bulk-per"><%= bp.per %></div>
+            <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Contact for <%= bp.qty %></a>
+          </div>
+          <% }) %>
+        </div>
+        <% } %>
+
+        <!-- Sample Data -->
+        <% if (product.samples) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>📋 Sample Data</h2>
+        </div>
+        <% product.samples.forEach((sample, idx) => { %>
+        <div class="sample-card">
+          <div class="sample-header">
+            <strong><%= sample.label %></strong>
+            <button class="btn btn-sm btn-secondary" onclick="copySample(<%= idx %>)">📋 Copy</button>
+          </div>
+          <pre class="sample-data" id="sample<%= idx %>"><code><%= sample.data %></code></pre>
+        </div>
+        <% }) %>
+        <% } %>
+
+        <!-- BINS Table -->
+        <% if (product.bins) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>🔢 Available BINS</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>BIN</th><th>Type</th><th>Bank</th></tr>
+            </thead>
+            <tbody>
+              <% product.bins.forEach((b) => { %>
+              <tr><td class="mono"><%= b.bin %></td><td><%= b.type %></td><td><%= b.bank %></td></tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+
+        <!-- Inventory Table (Bank Logs) -->
+        <% if (product.inventory) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>🏦 Current Inventory — Fresh Batch #ATLAS-0626-01</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Bank / Account Type</th><th>Balance Range</th><th>Available</th><th>Region</th></tr>
+            </thead>
+            <tbody>
+              <% product.inventory.forEach((inv) => { %>
+              <tr>
+                <td><%= inv.bank %></td>
+                <td class="mono" style="color:var(--gold);"><%= inv.balance %></td>
+                <td>x<%= inv.avail %></td>
+                <td><%= inv.country %></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+
+        <!-- Data Fields -->
+        <% if (product.fields) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>📄 Included Fields</h2>
+        </div>
+        <div class="data-format">
+          <% product.fields.forEach((f) => { %>
+          <span class="data-tag"><%= f %></span>
+          <% }) %>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="product-sidebar">
+        <div class="card info-card">
+          <h3>🛡️ Why Buy From Us</h3>
+          <ul class="feature-list">
+            <li>✓ Atlas Trade Group — Est. 2019</li>
+            <li>✓ 2,470+ orders completed</li>
+            <li>✓ Fresh stock updated weekly</li>
+            <li>✓ 24h replacement policy</li>
+            <li>✓ Wholesale pricing available</li>
+            <li>✓ Verified on multiple boards</li>
+          </ul>
+        </div>
+
+        <div class="card info-card">
+          <h3>📋 Product Details</h3>
+          <div class="detail-list">
+            <div class="detail-row-mini">
+              <span class="dl-label">Category</span>
+              <span class="dl-value"><%= product.name %></span>
+            </div>
+            <div class="detail-row-mini">
+              <span class="dl-label">Starting Price</span>
+              <span class="dl-value" style="color:var(--gold);">$<%= product.price %></span>
+            </div>
+            <div class="detail-row-mini">
+              <span class="dl-label">Delivery</span>
+              <span class="dl-value" style="color:var(--green);">Instant</span>
+            </div>
+            <div class="detail-row-mini">
+              <span class="dl-label">Payment</span>
+              <span class="dl-value">₿ BTC Only</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card info-card">
+          <h3>📞 Contact</h3>
+          <div class="contact-sidebar">
+            <p>Telegram: <a href="https://t.me/efullz">@efullz</a></p>
+            <p>Phone: +1 208 795 8997</p>
+            <p>Email: ru.vendors5@gmail.com</p>
+            <p style="font-size:0.7rem;color:var(--text-dim);margin-top:0.5rem;">PGP: 3A4B 7C8D 9E0F 1A2B 3C4D 5E6F 7A8B 9C0D 1E2F 3A4B</p>
+          </div>
+          <a href="https://t.me/efullz" class="btn btn-primary btn-block" target="_blank" style="margin-top:0.75rem;">📱 Contact @efullz</a>
+        </div>
+
+        <div class="card info-card">
+          <h3>📜 Terms</h3>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;"><%= product.terms %></p>
+          <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.75rem;">BTC Only — Come BTC Ready. Min order $100 (new clients). Replacement within 24h for dead items. No refunds — replacement only. Serious buyers only.</p>
+        </div>
+
+        <!-- Reviews -->
+        <div class="card reviews-card">
+          <h3>⭐ What Buyers Say</h3>
+          <% reviews.slice(0, 2).forEach(r => { %>
+          <div class="review-item">
+            <div class="review-stars"><%= '★'.repeat(r.rating) %><%= '☆'.repeat(5 - r.rating) %></div>
+            <p class="review-text">"<%= r.text.slice(0, 120) %>..."</p>
+            <div class="review-footer">
+              <span class="review-date"><%= r.date %></span>
+              <span class="review-verified">✓ <%= r.product %></span>
+            </div>
+          </div>
+          <% }) %>
+          <a href="/#reviews" class="btn btn-secondary btn-block" style="margin-top:0.75rem;">Read All Reviews</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEO Content Section -->
+<section class="section section-dark">
+  <div class="container">
+    <div class="seo-content">
+      <h2>Buy <%= product.name %> Online — Trusted Since 2019</h2>
+      <p>Looking for a reliable <strong><%= product.tags ? product.tags.slice(0, 3).join(', ') : product.name.toLowerCase() %></strong> vendor? Atlas Trade Group has been operating since 2019, providing premium carding and financial services to buyers worldwide. Our <%= product.name.toLowerCase() %> are sourced fresh, verified before delivery, and backed by a 24-hour replacement policy.</p>
+      <p>We accept <strong>Bitcoin (BTC) only</strong>. All payments are processed automatically through secure channels. No registration required — simply choose your product, submit your order, and pay. Delivery is instant for digital products.</p>
+      <p>With <strong>2,470+ orders completed</strong> and a 97.8% success rate, we are one of the most trusted vendors in the space. Contact us on Telegram <strong>@efullz</strong> for bulk pricing, custom requests, or any questions.</p>
+      <div class="seo-tags">
+        <% if (product.tags) { product.tags.forEach(t => { %>
+        <span class="seo-tag"><%= t %></span>
+        <% }) } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Section -->
+<section class="section">
+  <div class="container">
+    <div class="trust-grid">
+      <div class="trust-card">
+        <div class="tc-icon">🏆</div>
+        <h3>Established 2019</h3>
+        <p>Atlas Trade Group has been operating since 2019. We're not new — our reputation speaks for itself.</p>
+      </div>
+      <div class="trust-card">
+        <div class="tc-icon">⚡</div>
+        <h3>Instant Delivery</h3>
+        <p>Digital products delivered within minutes of payment confirmation. Automated system, no waiting.</p>
+      </div>
+      <div class="trust-card">
+        <div class="tc-icon">🔄</div>
+        <h3>24h Replacement</h3>
+        <p>Dead item? Send proof within 24 hours and get a free replacement. No questions asked.</p>
+      </div>
+      <div class="trust-card">
+        <div class="tc-icon">₿</div>
+        <h3>BTC Only</h3>
+        <p>Bitcoin only. No altcoins, no payment cards, no excuses. Come BTC ready or don't come at all.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Copy sample data to clipboard
+function copySample(idx) {
+  const el = document.getElementById('sample' + idx);
+  if (!el) return;
+  const text = el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.parentElement.querySelector('.btn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+</script>
+
+<%- include('partials/footer', { totalOrders, completedOrders, activeNow, reviews, currentYear, recentOrders }) %>

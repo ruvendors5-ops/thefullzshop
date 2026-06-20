@@ -1,0 +1,155 @@
+<%- include('partials/header', { seo: { title: 'Order Status — The Fullz Shop', description: 'Track your order status and delivery' }, totalOrders, completedOrders, activeNow, reviews, currentYear, recentOrders }) %>
+
+<section class="section">
+  <div class="container" style="max-width: 640px;">
+    <div class="card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;">
+      <div id="orderLoading" style="text-align:center;padding:3rem 0;">
+        <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+        <h3 style="color:#fff;">Loading Order...</h3>
+      </div>
+
+      <div id="orderContent" style="display:none;">
+        <div style="text-align:center;margin-bottom:2rem;" id="orderStatusHeader">
+          <div id="orderIcon" style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+          <h2 id="orderStatusTitle" style="color:#fff;font-size:1.4rem;">Checking Payment...</h2>
+        </div>
+
+        <div class="progress-bar" style="margin-bottom:2rem;">
+          <div class="progress-fill" id="orderProgressFill" style="width:0%;"></div>
+        </div>
+
+        <div class="order-summary" style="margin-bottom:1.5rem;">
+          <div class="os-row">
+            <span class="os-label">Order ID</span>
+            <span class="os-value" id="orderIdDisplay">---</span>
+          </div>
+          <div class="os-row">
+            <span class="os-label">Product</span>
+            <span class="os-value" id="orderProductDisplay">---</span>
+          </div>
+          <div class="os-row">
+            <span class="os-label">Variant</span>
+            <span class="os-value" id="orderVariantDisplay">---</span>
+          </div>
+          <div class="os-row">
+            <span class="os-label">Total</span>
+            <span class="os-value" id="orderTotalDisplay">---</span>
+          </div>
+          <div class="os-row">
+            <span class="os-label">Status</span>
+            <span class="os-value" id="orderStatusDisplay">---</span>
+          </div>
+        </div>
+
+        <div id="orderDelivery" style="display:none;background:rgba(0,255,65,0.06);border:1px solid rgba(0,255,65,0.2);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1.5rem;text-align:center;">
+          <p style="color:var(--green);font-weight:600;font-size:1.1rem;">✅ Order Delivered Successfully!</p>
+          <p style="color:var(--text-secondary);margin-top:0.5rem;">Your order has been delivered to your email. If you have any issues, contact @efullz on Telegram.</p>
+        </div>
+
+        <div id="orderWaiting" style="display:none;text-align:center;margin-bottom:1.5rem;">
+          <p style="color:var(--text-secondary);">Waiting for payment confirmation. This page updates automatically.</p>
+          <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;">You can close this page and return later using your Order ID.</p>
+        </div>
+
+        <div id="orderFailed" style="display:none;background:rgba(255,0,0,0.06);border:1px solid rgba(255,0,0,0.2);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1.5rem;text-align:center;">
+          <p style="color:#ff4444;font-weight:600;">❌ Payment Failed</p>
+          <p style="color:var(--text-secondary);margin-top:0.5rem;">Please contact @efullz on Telegram for assistance.</p>
+        </div>
+
+        <div style="text-align:center;margin-top:1.5rem;">
+          <a href="https://t.me/efullz" class="btn btn-outline" target="_blank">Contact Support</a>
+          <a href="/" class="btn btn-secondary" style="margin-left:0.5rem;">Back to Shop</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Order page — poll for status
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('id');
+  const npStatus = params.get('status'); // 'success' or 'cancel' from NowPayments redirect
+
+  if (!orderId) {
+    document.getElementById('orderLoading').style.display = 'none';
+    document.getElementById('orderContent').style.display = 'block';
+    document.getElementById('orderStatusTitle').textContent = 'No Order ID';
+    document.getElementById('orderStatusHeader').querySelector('div').textContent = '❌';
+    document.getElementById('orderWaiting').style.display = 'block';
+    document.getElementById('orderWaiting').querySelector('p').textContent = 'No order ID provided. Check your email for your order confirmation link.';
+    return;
+  }
+
+  document.getElementById('orderIdDisplay').textContent = orderId;
+
+  function fetchStatus() {
+    fetch('/.netlify/functions/check-payment?id=' + orderId)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('orderLoading').style.display = 'none';
+        document.getElementById('orderContent').style.display = 'block';
+
+        const icon = document.getElementById('orderIcon');
+        const title = document.getElementById('orderStatusTitle');
+        const fill = document.getElementById('orderProgressFill');
+        const delivery = document.getElementById('orderDelivery');
+        const waiting = document.getElementById('orderWaiting');
+        const failed = document.getElementById('orderFailed');
+
+        document.getElementById('orderProductDisplay').textContent = data.product || '---';
+        document.getElementById('orderVariantDisplay').textContent = data.variant || '---';
+        document.getElementById('orderTotalDisplay').textContent = data.totalUSD ? '$' + data.totalUSD : '---';
+        document.getElementById('orderStatusDisplay').textContent = data.status || 'unknown';
+
+        switch (data.status) {
+          case 'delivered':
+            icon.textContent = '✅';
+            title.textContent = 'Payment Confirmed — Delivered!';
+            fill.style.width = '100%';
+            fill.style.background = 'linear-gradient(90deg, #00ff41, #00cc34)';
+            delivery.style.display = 'block';
+            waiting.style.display = 'none';
+            failed.style.display = 'none';
+            document.getElementById('orderStatusDisplay').style.color = 'var(--green)';
+            break;
+          case 'awaiting':
+          case 'pending':
+            icon.textContent = '⏳';
+            title.textContent = 'Waiting for Payment Confirmation';
+            fill.style.width = '30%';
+            delivery.style.display = 'none';
+            waiting.style.display = 'block';
+            failed.style.display = 'none';
+            document.getElementById('orderStatusDisplay').style.color = 'var(--gold)';
+            // Poll again in 5s
+            setTimeout(fetchStatus, 5000);
+            break;
+          case 'failed':
+            icon.textContent = '❌';
+            title.textContent = 'Payment Failed';
+            fill.style.width = '0%';
+            delivery.style.display = 'none';
+            waiting.style.display = 'none';
+            failed.style.display = 'block';
+            document.getElementById('orderStatusDisplay').style.color = '#ff4444';
+            break;
+          default:
+            icon.textContent = '❓';
+            title.textContent = 'Order Status Unknown';
+            setTimeout(fetchStatus, 10000);
+        }
+      })
+      .catch(() => {
+        // Retry on error
+        setTimeout(fetchStatus, 5000);
+      });
+  }
+
+  // Start checking
+  fetchStatus();
+});
+</script>
+
+<%- include('partials/footer', { totalOrders, completedOrders, activeNow, reviews, currentYear, recentOrders }) %>

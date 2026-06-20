@@ -1,0 +1,254 @@
+<%- include('partials/header', { seo, totalOrders, completedOrders, activeNow, reviews, currentYear, recentOrders }) %>
+
+<!-- ── Hero ── -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-rating">
+          <span class="stars">★★★★★</span>
+          <span class="rating-text">4.9/5 — 1,247+ verified reviews</span>
+        </div>
+        <h1>The Most Trusted<br><span class="highlight">Fullz Marketplace</span></h1>
+        <p class="hero-sub">US Fullz, Non-VBV CCs, Bank Logs, CashApp & Venmo Loads, WU Transfers, Dumps + PIN, Cloned Cards — All fresh, all verified, all delivered instantly.</p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hs-value" id="heroOrders"><%= totalOrders.toLocaleString() %></span>
+            <span class="hs-label">Orders Completed</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hs-value"><%= (completedOrders / Math.max(totalOrders, 1) * 100).toFixed(0) %>%</span>
+            <span class="hs-label">Success Rate</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hs-value"><%= new Date().getFullYear() - 2022 %>+</span>
+            <span class="hs-label">Years Active</span>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <a href="#products" class="btn btn-primary btn-lg">Browse Products</a>
+          <a href="https://t.me/efullz" class="btn btn-outline btn-lg" target="_blank">Contact Support</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-glow"></div>
+        <div class="hero-cards-preview">
+          <div class="preview-card" style="--i:1">
+            <span>💳</span>
+            <span>Fullz</span>
+            <span>$80</span>
+          </div>
+          <div class="preview-card" style="--i:2">
+            <span>🏦</span>
+            <span>Bank Logs</span>
+            <span>$350+</span>
+          </div>
+          <div class="preview-card" style="--i:3">
+            <span>📱</span>
+            <span>CashApp</span>
+            <span>$100+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Products Grid ── -->
+<section class="section" id="products">
+  <div class="container">
+    <div class="section-header">
+      <h2>Our Products</h2>
+      <p>All data is fresh, verified, and ready for immediate delivery. Updated weekly.</p>
+    </div>
+
+    <div class="categories-grid">
+      <a href="/fullz" class="category-card" data-product="fullz">
+        <div class="cat-icon">👤</div>
+        <h3>Fullz w/ SSN DOB</h3>
+        <p>Complete identity packages — SSN, DOB, DL, address, bank info.</p>
+        <span class="cat-price">From $80</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/ccs" class="category-card" data-product="ccs">
+        <div class="cat-icon">💳</div>
+        <h3>Non-VBV CCs</h3>
+        <p>Full CC info with billing address, phone, email. High approval.</p>
+        <span class="cat-price">From $50</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/cashapp" class="category-card" data-product="cashapp">
+        <div class="cat-icon">📱</div>
+        <h3>CashApp Loads</h3>
+        <p>Direct CashApp balance loading. Safe, no chargeback.</p>
+        <span class="cat-price">From $100</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/venmo" class="category-card" data-product="venmo">
+        <div class="cat-icon">💸</div>
+        <h3>Venmo Transfers</h3>
+        <p>Secure Venmo transfers. No traces, no chargebacks.</p>
+        <span class="cat-price">From $250</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/wu" class="category-card" data-product="wu">
+        <div class="cat-icon">🌍</div>
+        <h3>WU Transfer</h3>
+        <p>Western Union MTCN in 2hrs. Pick up cash worldwide.</p>
+        <span class="cat-price">From $250</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/banklogs" class="category-card" data-product="banklogs">
+        <div class="cat-icon">🏦</div>
+        <h3>Bank Logs</h3>
+        <p>Online banking credentials with verified balances.</p>
+        <span class="cat-price">From $350</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/zelle" class="category-card" data-product="zelle">
+        <div class="cat-icon">⚡</div>
+        <h3>Zelle Transfers</h3>
+        <p>High-balance admin transfers. Database traces deleted.</p>
+        <span class="cat-price">From $250</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/paypal" class="category-card" data-product="paypal">
+        <div class="cat-icon">🅿️</div>
+        <h3>PayPal Transfers</h3>
+        <p>Verified account transfers. Worldwide except restricted.</p>
+        <span class="cat-price">From $300</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/dumps" class="category-card" data-product="dumps">
+        <div class="cat-icon">💾</div>
+        <h3>Dumps + PIN</h3>
+        <p>Track 1/2 data with PIN. EMV capable. All tiers.</p>
+        <span class="cat-price">From $45</span>
+        <span class="cat-arrow">→</span>
+      </a>
+
+      <a href="/cloned" class="category-card" data-product="cloned">
+        <div class="cat-icon">💳</div>
+        <h3>Cloned Cards</h3>
+        <p>Physical cloned cards. Express worldwide shipping.</p>
+        <span class="cat-price">From $150</span>
+        <span class="cat-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── How It Works ── -->
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-header">
+      <h2>How It Works</h2>
+      <p>Three simple steps to get your order delivered.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3>Choose Product</h3>
+        <p>Browse our selection. Pick the product and variant that fits your needs.</p>
+      </div>
+      <div class="step-connector">
+        <span>→</span>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3>Pay Crypto</h3>
+        <p>Send BTC or USDT (TRC20) to the generated address. Secure & anonymous.</p>
+      </div>
+      <div class="step-connector">
+        <span>→</span>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3>Receive Delivery</h3>
+        <p>Instant automated delivery upon payment confirmation. Check email or track online.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Reviews ── -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>What Our Customers Say</h2>
+      <p>Real reviews from verified buyers. Updated daily.</p>
+    </div>
+    <div class="reviews-grid">
+      <% reviews.forEach(r => { %>
+      <div class="review-card">
+        <div class="rc-stars"><%= '★'.repeat(r.rating) %><%= '☆'.repeat(5 - r.rating) %></div>
+        <p class="rc-text">"<%= r.text %>"</p>
+        <div class="rc-footer">
+          <span class="rc-date"><%= r.date %></span>
+          <span class="rc-verified">✓ Verified Purchase</span>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section class="section section-dark" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">How do I place an order? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Select a product, choose your variant, click "Buy Now", fill in your details, send BTC or USDT to the generated address. Once confirmed, delivery is automatic.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">What payment methods do you accept? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">We accept Bitcoin (BTC) and Tether USDT on TRC20 network only. No cards, no PayPal, no bank transfers.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">How long does delivery take? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Digital products (Fullz, CCs, Bank Logs, Dumps) are delivered instantly after payment confirmation. Transfers (CashApp, Venmo, WU, Zelle, PayPal) take 2-24 hours. Cloned cards ship express (3-7 days).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">What if the data is invalid? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">We replace dead fullz and CCs free of charge within 48 hours. Contact us with proof and we'll issue a replacement immediately.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">Is my privacy protected? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Absolutely. We don't store logs, IP addresses, or any identifying information. All communications are encrypted. We only need an email for delivery.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFAQ(this)">Do you offer bulk discounts? <span class="faq-toggle">+</span></div>
+        <div class="faq-a">Yes. Contact us on Telegram @efullz for bulk pricing on orders of 5+ units. Regular customers get discounted rates.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact / Support ── -->
+<section class="section">
+  <div class="container">
+    <div class="contact-cta">
+      <h2>Need Help?</h2>
+      <p>Our support team is available 24/7 on Telegram. We typically respond within minutes.</p>
+      <div class="contact-methods">
+        <a href="https://t.me/efullz" class="btn btn-primary btn-lg" target="_blank">📱 Telegram: @efullz</a>
+        <span class="contact-or">or</span>
+        <a href="mailto:ru.vendors5@gmail.com" class="btn btn-outline btn-lg">✉️ ru.vendors5@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer', { totalOrders, completedOrders, activeNow, reviews, currentYear, recentOrders }) %>
