@@ -77,6 +77,44 @@ const PRODUCTS = {
     deliveryTime: 'Instant — delivered to your email within 5 minutes of payment confirmation',
     requirements: [
       { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }
+    ],
+    // Country-specific bulk pricing for CC FULLZ
+    bulkByCountry: {
+      US: [
+        { qty: '10', price: 600, label: '10 US FULLZ', per: '$60/ea' },
+        { qty: '50', price: 2500, label: '50 US FULLZ', per: '$50/ea' },
+        { qty: '100', price: 4500, label: '100 US FULLZ', per: '$45/ea' },
+        { qty: '500', price: 20000, label: '500 US FULLZ', per: '$40/ea' },
+      ],
+      UK: [
+        { qty: '10', price: 700, label: '10 UK FULLZ', per: '$70/ea' },
+        { qty: '50', price: 3000, label: '50 UK FULLZ', per: '$60/ea' },
+        { qty: '100', price: 5500, label: '100 UK FULLZ', per: '$55/ea' },
+        { qty: '500', price: 25000, label: '500 UK FULLZ', per: '$50/ea' },
+      ],
+      CA: [
+        { qty: '10', price: 650, label: '10 CA FULLZ', per: '$65/ea' },
+        { qty: '50', price: 2750, label: '50 CA FULLZ', per: '$55/ea' },
+        { qty: '100', price: 5000, label: '100 CA FULLZ', per: '$50/ea' },
+        { qty: '500', price: 22500, label: '500 CA FULLZ', per: '$45/ea' },
+      ],
+      EU: [
+        { qty: '10', price: 750, label: '10 EU FULLZ', per: '$75/ea' },
+        { qty: '50', price: 3250, label: '50 EU FULLZ', per: '$65/ea' },
+        { qty: '100', price: 6000, label: '100 EU FULLZ', per: '$60/ea' },
+      ],
+      INTL: [
+        { qty: '10', price: 800, label: '10 INTL FULLZ', per: '$80/ea' },
+        { qty: '50', price: 3500, label: '50 INTL FULLZ', per: '$70/ea' },
+        { qty: '100', price: 6500, label: '100 INTL FULLZ', per: '$65/ea' },
+      ]
+    },
+    // SSN DOB DL only packs (no CC data) — bulk only
+    ssnPacks: [
+      { qty: '100', price: 125, label: '100 SSN DOB DL', per: '$1.25/ea' },
+      { qty: '250', price: 200, label: '250 SSN DOB DL', per: '$0.80/ea' },
+      { qty: '500', price: 350, label: '500 SSN DOB DL', per: '$0.70/ea' },
+      { qty: '1000', price: 600, label: '1000 SSN DOB DL', per: '$0.60/ea' },
     ]
   },
 
@@ -118,7 +156,38 @@ const PRODUCTS = {
     deliveryTime: 'Instant — delivered to your email within 5 minutes of payment confirmation',
     requirements: [
       { key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }
-    ]
+    ],
+    // Country-specific bulk pricing for standard CCs
+    bulkByCountry: {
+      US: [
+        { qty: '10', price: 350, label: '10 US CCs', per: '$35/ea' },
+        { qty: '50', price: 1500, label: '50 US CCs', per: '$30/ea' },
+        { qty: '100', price: 2500, label: '100 US CCs', per: '$25/ea' },
+        { qty: '500', price: 10000, label: '500 US CCs', per: '$20/ea' },
+      ],
+      UK: [
+        { qty: '10', price: 400, label: '10 UK CCs', per: '$40/ea' },
+        { qty: '50', price: 1750, label: '50 UK CCs', per: '$35/ea' },
+        { qty: '100', price: 3000, label: '100 UK CCs', per: '$30/ea' },
+        { qty: '500', price: 12500, label: '500 UK CCs', per: '$25/ea' },
+      ],
+      CA: [
+        { qty: '10', price: 370, label: '10 CA CCs', per: '$37/ea' },
+        { qty: '50', price: 1600, label: '50 CA CCs', per: '$32/ea' },
+        { qty: '100', price: 2750, label: '100 CA CCs', per: '$27.50/ea' },
+        { qty: '500', price: 11500, label: '500 CA CCs', per: '$23/ea' },
+      ],
+      EU: [
+        { qty: '10', price: 420, label: '10 EU CCs', per: '$42/ea' },
+        { qty: '50', price: 1900, label: '50 EU CCs', per: '$38/ea' },
+        { qty: '100', price: 3500, label: '100 EU CCs', per: '$35/ea' },
+      ],
+      INTL: [
+        { qty: '10', price: 450, label: '10 INTL CCs', per: '$45/ea' },
+        { qty: '50', price: 2000, label: '50 INTL CCs', per: '$40/ea' },
+        { qty: '100', price: 3800, label: '100 INTL CCs', per: '$38/ea' },
+      ]
+    }
   },
 
   // ===== [03] DUMPS TRACK 1/2 + PIN =====

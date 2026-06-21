@@ -56,8 +56,40 @@
           <% }) %>
         </div>
 
-        <!-- Bulk Pricing -->
-        <% if (product.bulkPricing) { %>
+        <!-- Bulk Pricing (with optional country selector) -->
+        <% if (product.bulkByCountry) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>📦 Bulk / Wholesale Pricing</h2>
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+            <label style="font-size:0.82rem;color:var(--text-secondary);">Region:</label>
+            <select id="bulkCountry" class="form-input" style="width:auto;padding:0.4rem 0.7rem;font-size:0.82rem;" onchange="switchBulkCountry()">
+              <% Object.keys(product.bulkByCountry).forEach(c => { %>
+              <option value="<%= c %>" <%= c === 'US' ? 'selected' : '' %>><%= c %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div id="bulkGridContainer">
+          <% const defaultCountry = 'US'; %>
+          <% if (product.bulkByCountry[defaultCountry]) { %>
+          <div class="bulk-grid" id="bulkGrid">
+            <% product.bulkByCountry[defaultCountry].forEach((bp) => { %>
+            <div class="bulk-card">
+              <div class="bulk-qty"><%= bp.qty %></div>
+              <div class="bulk-label"><%= bp.label %></div>
+              <div class="bulk-price">$<%= bp.price.toLocaleString() %></div>
+              <div class="bulk-per"><%= bp.per %></div>
+              <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Contact for <%= bp.qty %></a>
+            </div>
+            <% }) %>
+          </div>
+          <% } %>
+        </div>
+        <!-- Store all country data for JS switching -->
+        <script>
+          window.bulkByCountry = <%- JSON.stringify(product.bulkByCountry) %>;
+        </script>
+        <% } else if (product.bulkPricing) { %>
         <div class="section-subheader" style="margin-top:2rem;">
           <h2>📦 Bulk / Wholesale Pricing</h2>
         </div>
@@ -74,6 +106,26 @@
         </div>
         <% } %>
 
+        <!-- SSN DOB DL Only Packs (Fullz page) -->
+        <% if (product.ssnPacks) { %>
+        <div class="section-subheader" style="margin-top:2rem;">
+          <h2>🆔 SSN DOB DL Only — No CC Data</h2>
+          <p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.3rem;">Identity packages with SSN, DOB, DL, address, phone, email. No credit card details. Bulk packs only.</p>
+        </div>
+        <div class="bulk-grid">
+          <% product.ssnPacks.forEach((sp) => { %>
+          <div class="bulk-card" style="border-color:rgba(255,255,255,0.1);">
+            <div class="bulk-qty"><%= sp.qty %></div>
+            <div class="bulk-label"><%= sp.label %></div>
+            <div class="bulk-price">$<%= sp.price.toLocaleString() %></div>
+            <div class="bulk-per"><%= sp.per %></div>
+            <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Buy <%= sp.qty %></a>
+          </div>
+          <% }) %>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-dim);margin-top:0.5rem;">⚠️ SSN DOB DL packs contain identity data only — no credit card numbers. Format: NAME|ADDRESS|DOB|DL|SSN|PHONE|EMAIL. Delivered via email.</p>
+        <% } %>
+
         <!-- Sample Data -->
         <% if (product.samples) { %>
         <div class="section-subheader" style="margin-top:2rem;">
@@ -88,6 +140,19 @@
           <pre class="sample-data" id="sample<%= idx %>"><code><%= sample.data %></code></pre>
         </div>
         <% }) %>
+        <% } %>
+
+        <!-- UK/CA Format Clarification (Fullz page) -->
+        <% if (product.id === 'fullz') { %>
+        <div class="format-note-card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-top:1.5rem;">
+          <h4 style="margin-bottom:0.5rem;color:#fff;">🌍 UK & Canada Fullz Format</h4>
+          <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.8;">
+            <p><strong style="color:#fff;">UK Format:</strong> <code class="mono" style="color:var(--green);font-size:0.75rem;">CC#|EXP|CVV|NAME|ADDRESS|POSTCODE|DOB|DL|NINO|SORT CODE|ACCT|PHONE|EMAIL|IP</code></p>
+            <p style="margin-top:0.3rem;">UK fullz include <strong style="color:#fff;">National Insurance Number (NINO)</strong> instead of SSN, and <strong style="color:#fff;">Sort Code + Account Number</strong> instead of routing/account.</p>
+            <p style="margin-top:0.8rem;"><strong style="color:#fff;">CA Format:</strong> <code class="mono" style="color:var(--green);font-size:0.75rem;">CC#|EXP|CVV|NAME|ADDRESS|POSTAL CODE|DOB|DL|SIN|INSTITUTION#|ACCT|PHONE|EMAIL|IP</code></p>
+            <p style="margin-top:0.3rem;">Canada fullz include <strong style="color:#fff;">Social Insurance Number (SIN)</strong> and <strong style="color:#fff;">Institution Number + Account Number</strong> (instead of routing). Province included in address.</p>
+          </div>
+        </div>
         <% } %>
 
         <!-- BINS Table -->
@@ -268,6 +333,29 @@
 // ── Product requirements for checkout form ──
 window.productRequirements = <%- JSON.stringify(product.requirements || [{ key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }]) %>;
 window.productId = '<%= product.id %>';
+
+// ── Country-based bulk pricing switcher ──
+function switchBulkCountry() {
+  const sel = document.getElementById('bulkCountry');
+  const container = document.getElementById('bulkGridContainer');
+  if (!sel || !container || !window.bulkByCountry) return;
+  
+  const country = sel.value;
+  const prices = window.bulkByCountry[country];
+  if (!prices) return;
+  
+  container.innerHTML = '<div class="bulk-grid" id="bulkGrid">' +
+    prices.map(bp => `
+      <div class="bulk-card">
+        <div class="bulk-qty">${bp.qty}</div>
+        <div class="bulk-label">${bp.label}</div>
+        <div class="bulk-price">$${bp.price.toLocaleString()}</div>
+        <div class="bulk-per">${bp.per}</div>
+        <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Contact for ${bp.qty}</a>
+      </div>
+    `).join('') +
+  '</div>';
+}
 
 // Copy sample data to clipboard
 function copySample(idx) {
