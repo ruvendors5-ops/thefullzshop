@@ -31,30 +31,65 @@
         <div class="section-subheader">
           <h2>💰 Pricing — <%= product.priceLabel %></h2>
         </div>
-        <div class="product-cards">
-          <% product.variants.forEach((variant) => { %>
-          <div class="card product-card">
-            <div class="card-badge"><%= variant.label %></div>
-            <div class="card-body">
-              <div class="card-price">
-                <span class="price-currency">$</span>
-                <span class="price-amount"><%= variant.price %></span>
+
+        <% if (product.methodGroups) { %>
+          <!-- Method Groups Layout (Wire/WU/MG services) -->
+          <% product.methodGroups.forEach((group) => { %>
+          <div class="method-group" style="margin-bottom:2rem;padding:1.2rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);">
+            <div class="method-group-header" style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.8rem;">
+              <span style="font-size:1.5rem;"><%= group.icon %></span>
+              <div>
+                <h3 style="margin:0;color:#fff;font-size:1.15rem;"><%= group.method %></h3>
+                <p style="margin:0;font-size:0.8rem;color:var(--text-dim);"><%= group.subtitle %></p>
               </div>
-              <% if (variant.note) { %>
-              <p style="font-size:0.75rem;color:var(--text-dim);text-align:center;margin-bottom:0.75rem;"><%= variant.note %></p>
-              <% } %>
-              <div class="card-meta">
-                <span class="meta-item">✓ Fresh & Valid</span>
-                <span class="meta-item">✓ Instant Delivery</span>
-                <span class="meta-item">✓ 24h Replacement</span>
+            </div>
+            <div class="product-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+              <% group.tiers.forEach((tier) => { %>
+              <div class="card product-card" style="margin:0;">
+                <div class="card-badge">Receive $<%= tier.receiveAmount.toLocaleString() %></div>
+                <div class="card-body">
+                  <div class="card-price">
+                    <span class="price-currency">$</span>
+                    <span class="price-amount"><%= tier.price %></span>
+                  </div>
+                  <p style="font-size:0.72rem;color:var(--text-dim);text-align:center;margin-bottom:0.5rem;">You receive <strong style="color:#fff;">$<%= tier.receiveAmount.toLocaleString() %></strong></p>
+                  <button class="btn btn-primary btn-block" onclick="openWUCheckout('<%= product.id %>', '<%= group.key %>', '<%= tier.label %>', <%= tier.price %>)">
+                    Buy Now — $<%= tier.price %>
+                  </button>
+                </div>
               </div>
-              <button class="btn btn-primary btn-block" onclick="openCheckout('<%= product.id %>', '<%= variant.label %>', <%= variant.price %>)">
-                Buy Now — $<%= variant.price %>
-              </button>
+              <% }) %>
             </div>
           </div>
           <% }) %>
-        </div>
+          <p style="font-size:0.8rem;color:var(--text-dim);text-align:center;margin-top:0.5rem;">Need a larger amount? Contact <a href="<%= contact.telegram %>" style="color:var(--gold);"><%= contact.telegram %></a> for custom pricing.</p>
+        <% } else { %>
+          <!-- Standard Variant Cards -->
+          <div class="product-cards">
+            <% product.variants.forEach((variant) => { %>
+            <div class="card product-card">
+              <div class="card-badge"><%= variant.label %></div>
+              <div class="card-body">
+                <div class="card-price">
+                  <span class="price-currency">$</span>
+                  <span class="price-amount"><%= variant.price %></span>
+                </div>
+                <% if (variant.note) { %>
+                <p style="font-size:0.75rem;color:var(--text-dim);text-align:center;margin-bottom:0.75rem;"><%= variant.note %></p>
+                <% } %>
+                <div class="card-meta">
+                  <span class="meta-item">✓ Fresh & Valid</span>
+                  <span class="meta-item">✓ Instant Delivery</span>
+                  <span class="meta-item">✓ 24h Replacement</span>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="openCheckout('<%= product.id %>', '<%= variant.label %>', <%= variant.price %>)">
+                  Buy Now — $<%= variant.price %>
+                </button>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        <% } %>
 
         <!-- Crypto Off-Ramp Details -->
         <% if (product.offramp) { %>
@@ -472,6 +507,23 @@
 // ── Product requirements for checkout form ──
 window.productRequirements = <%- JSON.stringify(product.requirements || [{ key: 'email', label: 'Email for Delivery', type: 'email', placeholder: 'your@email.com', required: true }]) %>;
 window.productId = '<%= product.id %>';
+
+<% if (product.methodGroups) { %>
+// ── Method Groups (Wire / ACH / WU / MG) field config ──
+window.wuMethodGroups = <%- JSON.stringify(product.methodGroups.map(g => ({
+  key: g.key,
+  fields: g.fields
+}))) %>;
+
+// Open checkout with method-specific fields
+window.openWUCheckout = function(productId, methodKey, label, price) {
+  const group = window.wuMethodGroups.find(g => g.key === methodKey);
+  if (group) {
+    window.productRequirements = JSON.parse(JSON.stringify(group.fields));
+  }
+  openCheckout(productId, label, price);
+};
+<% } %>
 
 // ── Country-based bulk pricing switcher ──
 function switchBulkCountry() {

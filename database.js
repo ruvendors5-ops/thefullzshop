@@ -377,25 +377,127 @@ const PRODUCTS = {
     name: 'WIRE / ACH / WU / MG',
     subtitle: 'Bank Wire, ACH, Western Union & MoneyGram',
     shortDesc: 'Domestic & international wire transfers. ACH deposits. WU/MTCN in 2hrs.',
-    longDesc: `Full wire transfer service. Domestic and international bank wires. ACH deposits to any US bank account. Western Union MTCN codes generated within 2 hours. MoneyGram transfers worldwide. All transfers are clean with no traces.`,
-    price: 75,
-    priceLabel: 'From $75',
+    longDesc: `Full wire transfer service. Domestic and international bank wires. ACH deposits to any US bank account. Western Union MTCN codes generated within 2 hours. MoneyGram transfers worldwide. All transfers are clean with no traces. Larger amounts available — contact @efullz for custom quotes.`,
+    price: 150,
+    priceLabel: 'From $150',
     variants: [
-      { label: 'Domestic Wire', price: 75, note: '+ 6% fee' },
-      { label: 'International Wire', price: 150, note: '+ 10% fee' },
-      { label: 'ACH Transfer', price: 50, note: '+ 5% fee' },
-      { label: 'Western Union', price: 100, note: '+ 12% fee' },
-      { label: 'MoneyGram', price: 100, note: '+ 12% fee' },
+      { label: 'Domestic Wire — $2,500', price: 150 },
+      { label: 'Domestic Wire — $5,000', price: 325 },
+      { label: 'Domestic Wire — $10,000', price: 700 },
+      { label: 'ACH Transfer — $2,500', price: 150 },
+      { label: 'ACH Transfer — $5,000', price: 325 },
+      { label: 'ACH Transfer — $10,000', price: 700 },
+      { label: 'International Wire — $2,500', price: 250 },
+      { label: 'International Wire — $5,000', price: 550 },
+      { label: 'International Wire — $10,000', price: 1100 },
+      { label: 'Western Union — $2,500', price: 200 },
+      { label: 'Western Union — $5,000', price: 400 },
+      { label: 'Western Union — $10,000', price: 800 },
+      { label: 'MoneyGram — $2,500', price: 200 },
+      { label: 'MoneyGram — $5,000', price: 400 },
+      { label: 'MoneyGram — $10,000', price: 800 },
     ],
-    tags: ['western union transfer', 'wire transfer', 'ach transfer', 'money gram', 'wu hack', 'mtcn code', 'bank transfer service', 'send money anonymously'],
-    terms: 'Domestic wire: $75 + 6%. International wire: $150 + 10%. ACH: $50 + 5%. WU/MG: $100 + 12%. MTCN generated within 2 hours for WU.',
+    // Method groups for grouped display + per-method dynamic fields
+    methodGroups: [
+      {
+        key: 'dw',
+        method: 'Domestic Wire',
+        icon: '🏦',
+        subtitle: 'Domestic wire to any US bank account',
+        tiers: [
+          { receiveAmount: 2500, price: 150, label: 'Domestic Wire — $2,500' },
+          { receiveAmount: 5000, price: 325, label: 'Domestic Wire — $5,000' },
+          { receiveAmount: 10000, price: 700, label: 'Domestic Wire — $10,000' },
+        ],
+        fields: [
+          { key: 'full_name', label: 'Your Full Legal Name', type: 'text', placeholder: 'As appears on bank account', required: true },
+          { key: 'bank_name', label: 'Bank Name', type: 'text', placeholder: 'e.g. Chase, Wells Fargo', required: true },
+          { key: 'account_number', label: 'Account Number', type: 'text', placeholder: 'Your bank account number', required: true },
+          { key: 'routing_number', label: 'Routing Number', type: 'text', placeholder: '9-digit routing number', required: true },
+          { key: 'email', label: 'Email (for order updates)', type: 'email', placeholder: 'your@email.com', required: true },
+        ]
+      },
+      {
+        key: 'ach',
+        method: 'ACH Transfer',
+        icon: '📊',
+        subtitle: 'Direct ACH deposit to any US bank account',
+        tiers: [
+          { receiveAmount: 2500, price: 150, label: 'ACH Transfer — $2,500' },
+          { receiveAmount: 5000, price: 325, label: 'ACH Transfer — $5,000' },
+          { receiveAmount: 10000, price: 700, label: 'ACH Transfer — $10,000' },
+        ],
+        fields: [
+          { key: 'full_name', label: 'Your Full Legal Name', type: 'text', placeholder: 'As appears on bank account', required: true },
+          { key: 'bank_name', label: 'Bank Name', type: 'text', placeholder: 'e.g. Chase, Wells Fargo', required: true },
+          { key: 'account_number', label: 'Account Number', type: 'text', placeholder: 'Your bank account number', required: true },
+          { key: 'routing_number', label: 'Routing Number', type: 'text', placeholder: '9-digit routing number', required: true },
+          { key: 'email', label: 'Email (for order updates)', type: 'email', placeholder: 'your@email.com', required: true },
+        ]
+      },
+      {
+        key: 'iw',
+        method: 'International Wire',
+        icon: '🌍',
+        subtitle: 'International wire transfer — SWIFT/IBAN',
+        tiers: [
+          { receiveAmount: 2500, price: 250, label: 'International Wire — $2,500' },
+          { receiveAmount: 5000, price: 550, label: 'International Wire — $5,000' },
+          { receiveAmount: 10000, price: 1100, label: 'International Wire — $10,000' },
+        ],
+        fields: [
+          { key: 'full_name', label: 'Your Full Legal Name', type: 'text', placeholder: 'As appears on bank account', required: true },
+          { key: 'bank_name', label: 'Bank Name', type: 'text', placeholder: 'Name of receiving bank', required: true },
+          { key: 'account_number', label: 'Account Number / IBAN', type: 'text', placeholder: 'Account number or IBAN', required: true },
+          { key: 'swift_code', label: 'SWIFT / BIC Code', type: 'text', placeholder: 'e.g. CHASUS33', required: true },
+          { key: 'country', label: 'Bank Country', type: 'text', placeholder: 'e.g. United Kingdom', required: true },
+          { key: 'email', label: 'Email (for order updates)', type: 'email', placeholder: 'your@email.com', required: true },
+        ]
+      },
+      {
+        key: 'wu',
+        method: 'Western Union',
+        icon: '🌐',
+        subtitle: 'Cash pickup at any WU location worldwide',
+        tiers: [
+          { receiveAmount: 2500, price: 200, label: 'Western Union — $2,500' },
+          { receiveAmount: 5000, price: 400, label: 'Western Union — $5,000' },
+          { receiveAmount: 10000, price: 800, label: 'Western Union — $10,000' },
+        ],
+        fields: [
+          { key: 'full_name', label: 'Your Full Name (for pickup)', type: 'text', placeholder: 'Must match ID for pickup', required: true },
+          { key: 'pickup_city', label: 'Pickup City', type: 'text', placeholder: 'City for WU pickup location', required: true },
+          { key: 'pickup_country', label: 'Pickup Country', type: 'text', placeholder: 'Country for pickup', required: true },
+          { key: 'email', label: 'Email (for MTCN tracking)', type: 'email', placeholder: 'your@email.com', required: true },
+        ]
+      },
+      {
+        key: 'mg',
+        method: 'MoneyGram',
+        icon: '💵',
+        subtitle: 'Cash pickup at any MoneyGram location worldwide',
+        tiers: [
+          { receiveAmount: 2500, price: 200, label: 'MoneyGram — $2,500' },
+          { receiveAmount: 5000, price: 400, label: 'MoneyGram — $5,000' },
+          { receiveAmount: 10000, price: 800, label: 'MoneyGram — $10,000' },
+        ],
+        fields: [
+          { key: 'full_name', label: 'Your Full Name (for pickup)', type: 'text', placeholder: 'Must match ID for pickup', required: true },
+          { key: 'pickup_city', label: 'Pickup City', type: 'text', placeholder: 'City for MoneyGram pickup', required: true },
+          { key: 'pickup_country', label: 'Pickup Country', type: 'text', placeholder: 'Country for pickup', required: true },
+          { key: 'email', label: 'Email (for tracking)', type: 'email', placeholder: 'your@email.com', required: true },
+        ]
+      }
+    ],
+    tags: ['wire transfer', 'ach transfer', 'western union', 'moneygram', 'domestic wire', 'international wire', 'bank transfer service', 'wu mtcn', 'send money', 'receive wire', 'ach deposit'],
+    terms: 'Domestic Wire & ACH: $150-$700 depending on amount. International Wire: $250-$1,100. Western Union & MoneyGram: $200-$800. Delivery within 2-24 hours depending on method. All transfers are clean with no traces. Need larger amounts? Contact @efullz.',
     deliveryTime: 'Domestic wire & ACH: 2-6 hours. International wire: 6-24 hours. WU/MG: MTCN in 2 hours, pickup ready within 4 hours.',
     requirements: [
-      { key: 'sender_name', label: 'Sender Full Name', type: 'text', placeholder: 'John Doe', required: true },
-      { key: 'receiver_info', label: 'Receiver Details (name, location, bank)', type: 'textarea', placeholder: 'Receiver name, city/country, bank name (if wire)', required: true },
-      { key: 'transfer_amount', label: 'Transfer Amount ($)', type: 'number', placeholder: 'e.g. 5000', required: true },
-      { key: 'transfer_type', label: 'Transfer Method', type: 'select', options: ['Domestic Wire', 'International Wire', 'ACH Transfer', 'Western Union', 'MoneyGram'], required: true },
-      { key: 'email', label: 'Email (for tracking updates)', type: 'email', placeholder: 'your@email.com', required: true }
+      { key: 'full_name', label: 'Your Full Legal Name', type: 'text', placeholder: 'As appears on bank account', required: true },
+      { key: 'bank_name', label: 'Bank Name', type: 'text', placeholder: 'e.g. Chase, Wells Fargo', required: true },
+      { key: 'account_number', label: 'Account Number', type: 'text', placeholder: 'Your bank account number', required: true },
+      { key: 'routing_number', label: 'Routing Number', type: 'text', placeholder: '9-digit routing number', required: true },
+      { key: 'email', label: 'Email (for order updates)', type: 'email', placeholder: 'your@email.com', required: true },
     ]
   },
 
