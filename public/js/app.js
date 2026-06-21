@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Checkout System ──
   let currentCheckout = { product: null, variant: null, price: 0 };
+  let originalProductRequirements = null;
 
   // Render dynamic checkout fields based on product requirements
   function renderCheckoutFields(requirements) {
@@ -161,12 +162,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.openCheckout = function(productId, variantLabel, price) {
+    // Backup original product requirements on first call so submitOfframp() can't corrupt them
+    if (!originalProductRequirements) {
+      originalProductRequirements = JSON.parse(JSON.stringify(window.productRequirements));
+    }
+    // Always restore original requirements (submitOfframp() may have overwritten them)
+    window.productRequirements = JSON.parse(JSON.stringify(originalProductRequirements));
+
     currentCheckout.product = productId;
     currentCheckout.variant = variantLabel;
     currentCheckout.price = price;
     
+    // Stop any lingering payment polling from a previous session
+    if (paymentPollInterval) {
+      clearInterval(paymentPollInterval);
+      paymentPollInterval = null;
+    }
+    
+    // Wipe stale payment display HTML from previous session
+    document.getElementById('paymentDisplay').innerHTML = '';
+    
     document.getElementById('checkoutTitle').textContent = `Buy ${variantLabel}`;
-    document.getElementById('checkoutTotal').textContent = `$${price}`;
     
     // Show summary
     document.getElementById('orderSummary').innerHTML = `
@@ -202,6 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.closeCheckout = function() {
+    // Stop any running payment polling
+    if (paymentPollInterval) {
+      clearInterval(paymentPollInterval);
+      paymentPollInterval = null;
+    }
     document.getElementById('checkoutModal').classList.remove('open');
   };
 
@@ -287,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Poll payment status
   async function startPaymentPolling(paymentId) {
-    if (paymentPollInterval) clearInterval(pollInterval);
+    if (paymentPollInterval) clearInterval(paymentPollInterval);
     
     const checkStatus = async () => {
       try {

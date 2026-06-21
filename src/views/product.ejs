@@ -72,8 +72,16 @@
             <div class="offramp-row">
               <div class="offramp-field">
                 <label>Amount to Convert ($)</label>
-                <input type="number" id="offrampAmount" class="form-input" min="2500" max="50000" value="2500" oninput="calcOfframpFee()" onchange="calcOfframpFee()">
-                <span class="field-hint">Min $2,500 — Max $50,000</span>
+                <div class="offramp-input-group">
+                  <input type="number" id="offrampAmount" class="form-input" min="2500" max="50000" value="2500" step="100" oninput="calcOfframpFee()" onchange="calcOfframpFee()">
+                  <div class="offramp-presets" id="offrampPresets">
+                    <button type="button" class="preset-btn" onclick="setOfframpAmount(2500)">$2.5k</button>
+                    <button type="button" class="preset-btn" onclick="setOfframpAmount(5000)">$5k</button>
+                    <button type="button" class="preset-btn" onclick="setOfframpAmount(10000)">$10k</button>
+                    <button type="button" class="preset-btn" onclick="setOfframpAmount(25000)">$25k</button>
+                    <button type="button" class="preset-btn" onclick="setOfframpAmount(50000)">$50k</button>
+                  </div>
+                </div>
               </div>
               <div class="offramp-field">
                 <label>Receiving Method</label>
@@ -109,19 +117,19 @@
             <div class="offramp-fee-box" id="offrampFeeBox">
               <div class="offramp-fee-row">
                 <span>Transfer Amount:</span>
-                <span id="offrampTransferAmt">$2,500.00</span>
+                <span class="offramp-val" id="offrampTransferAmt">$2,500.00</span>
               </div>
               <div class="offramp-fee-row">
-                <span>Fee Percentage:</span>
-                <span id="offrampFeePct">18%</span>
+                <span>Fee (<span id="offrampFeePct">18</span>%):</span>
+                <span class="offramp-val" id="offrampTotalFee">$450.00</span>
               </div>
               <div class="offramp-fee-row total">
-                <span>You Pay (Fee):</span>
-                <span id="offrampTotalFee">$450.00</span>
+                <span>Total in BTC:</span>
+                <span class="offramp-val" id="offrampBtcEq">≈ 0.0047 BTC</span>
               </div>
               <div class="offramp-fee-row">
-                <span>BTC Equivalent:</span>
-                <span id="offrampBtcEq">≈ 0.0047 BTC</span>
+                <span>You Receive:</span>
+                <span class="offramp-val" style="color:var(--green);" id="offrampReceiveAmt">$2,050.00</span>
               </div>
             </div>
             
@@ -164,7 +172,7 @@
             </div>
             
             <button class="btn btn-primary btn-lg btn-block" onclick="submitOfframp()" id="offrampBtn">
-              💰 Pay Fee of <span id="offrampBtnFee">$450.00</span> in BTC — Process Transfer
+              💰 Pay Fee: <span id="offrampBtnFee">$450.00</span> (<span id="offrampBtnBtc">≈ 0.0047 BTC</span>) — Process Transfer →
             </button>
           </div>
         </div>
@@ -177,7 +185,12 @@
           .offramp-fee-box { background: var(--bg-card); border: 1px solid var(--gold); border-radius: var(--radius-sm); padding: 1rem; margin: 1rem 0; }
           .offramp-fee-row { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.85rem; color: var(--text-secondary); }
           .offramp-fee-row.total { border-top: 1px solid var(--border); margin-top: 0.3rem; padding-top: 0.7rem; font-size: 1rem; font-weight: 700; color: var(--gold); }
+          .offramp-val { font-family: var(--font-mono); }
           .offramp-divider { border-top: 1px solid var(--border); margin: 1.25rem 0; }
+          .offramp-input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+          .offramp-presets { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+          .preset-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.3rem 0.6rem; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+          .preset-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(255,215,0,0.08); }
           @media (max-width: 600px) { .offramp-row { grid-template-columns: 1fr; } }
         </style>
         <% } %>
@@ -484,6 +497,11 @@ function switchBulkCountry() {
 }
 
 // ── Off-Ramp Calculator ──
+function setOfframpAmount(val) {
+  const input = document.getElementById('offrampAmount');
+  if (input) { input.value = val; calcOfframpFee(); }
+}
+
 function calcOfframpFee() {
   const amtInput = document.getElementById('offrampAmount');
   const methodSel = document.getElementById('offrampMethod');
@@ -503,15 +521,19 @@ function calcOfframpFee() {
   const totalFee = (amount * effectiveFee / 100);
   const btcRate = 95000; // approximate BTC/USD rate
   const btcEq = (totalFee / btcRate).toFixed(8);
+  const receiveAmt = amount - totalFee;
 
-  document.getElementById('offrampTransferAmt').textContent = '$' + amount.toLocaleString('en-US', {minimumFractionDigits: 2});
-  document.getElementById('offrampFeePct').textContent = effectiveFee + '%';
-  document.getElementById('offrampTotalFee').textContent = '$' + totalFee.toLocaleString('en-US', {minimumFractionDigits: 2});
+  const fmt = (n) => '$' + n.toLocaleString('en-US', {minimumFractionDigits: 2});
+  document.getElementById('offrampTransferAmt').textContent = fmt(amount);
+  document.getElementById('offrampFeePct').textContent = effectiveFee;
+  document.getElementById('offrampTotalFee').textContent = fmt(totalFee);
   document.getElementById('offrampBtcEq').textContent = '≈ ' + btcEq + ' BTC';
-  document.getElementById('offrampBtnFee').textContent = '$' + totalFee.toLocaleString('en-US', {minimumFractionDigits: 2});
+  document.getElementById('offrampReceiveAmt').textContent = fmt(receiveAmt);
+  document.getElementById('offrampBtnFee').textContent = fmt(totalFee);
+  document.getElementById('offrampBtnBtc').textContent = '≈ ' + btcEq + ' BTC';
   
   // Store for submission
-  window._offrampData = { transferAmount: amount, feePct: effectiveFee, totalFee, btcEq };
+  window._offrampData = { transferAmount: amount, feePct: effectiveFee, totalFee, btcEq, receiveAmt };
 }
 
 // ── Submit Off-Ramp Order ──
@@ -535,9 +557,15 @@ function submitOfframp() {
   }
   
   if (!window._offrampData || window._offrampData.totalFee < 10) {
-    alert('Please check the amount - minimum fee is $10.');
+    alert('Please check the amount — minimum fee is $10.');
     return;
   }
+
+  const d = window._offrampData;
+  const method = document.getElementById('offrampMethod').value;
+  const currency = document.getElementById('offrampCurrency').value;
+  const country = document.getElementById('offrampCountry').value;
+  const fmt = (n) => '$' + n.toLocaleString('en-US', {minimumFractionDigits: 2});
 
   // Set custom requirements for checkout
   window.productRequirements = [
@@ -561,14 +589,47 @@ function submitOfframp() {
     fillField('cf_routing', fields.routing.value.trim());
     fillField('cf_branch', fields.branch.value.trim());
     fillField('cf_offramp_email', fields.email.value.trim());
-    // Put transfer details in notes
     const notes = document.getElementById('cf_notes');
     if (notes) {
-      notes.value = `OFF-RAMP: $${window._offrampData.transferAmount} via ${document.getElementById('offrampMethod').value} | ${document.getElementById('offrampCurrency').value} | ${document.getElementById('offrampCountry').value}`;
+      notes.value = `OFF-RAMP: Transfer ${fmt(d.transferAmount)} → ${currency} via ${method} (${country}) | Fee: ${fmt(d.totalFee)} (${d.feePct}%) | You receive: ${fmt(d.receiveAmt)} | BTC: ${d.btcEq}`;
     }
   }, 50);
 
-  openCheckout(window.productId || 'cloned', 'Crypto Off-Ramp', window._offrampData.totalFee);
+  openCheckout(window.productId || 'cloned', 'Crypto Off-Ramp', d.totalFee);
+
+  // Override the generic order summary with a detailed off-ramp breakdown
+  const methodEl = document.getElementById('offrampMethod');
+  const methodName = methodEl ? methodEl.options[methodEl.selectedIndex].text : '—';
+  document.getElementById('orderSummary').innerHTML = `
+    <div class="os-row">
+      <span class="os-label">Service</span>
+      <span class="os-value">Crypto Off-Ramp</span>
+    </div>
+    <div class="os-row">
+      <span class="os-label">Transfer Amount</span>
+      <span class="os-value">${fmt(d.transferAmount)}</span>
+    </div>
+    <div class="os-row">
+      <span class="os-label">Receiving Method</span>
+      <span class="os-value">${methodName.split(' — ')[0]}</span>
+    </div>
+    <div class="os-row">
+      <span class="os-label">Currency / Country</span>
+      <span class="os-value">${currency} → ${country}</span>
+    </div>
+    <div class="os-row">
+      <span class="os-label">Fee (${d.feePct}%)</span>
+      <span class="os-value">${fmt(d.totalFee)}</span>
+    </div>
+    <div class="os-row" style="border-top:1px solid var(--border);margin-top:0.4rem;padding-top:0.8rem;">
+      <span class="os-label">Fee in BTC</span>
+      <span class="os-value" style="color:var(--gold);font-weight:700;">≈ ${d.btcEq} BTC</span>
+    </div>
+    <div class="os-row" style="font-size:0.82rem;color:var(--green);">
+      <span class="os-label">You Will Receive</span>
+      <span class="os-value">${fmt(d.receiveAmt)}</span>
+    </div>
+  `;
 }
 
 // Initialize calculator on page load

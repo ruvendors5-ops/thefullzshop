@@ -437,7 +437,6 @@ const PRODUCTS = {
       { label: 'Binance Verified (w/ History)', price: 200, note: '$200-500' },
       { label: 'Coinbase Verified (Aged)', price: 150, note: '$150-400' },
       { label: 'Kraken / Bybit / KuCoin', price: 120, note: '$120-350' },
-      { label: 'Crypto Off-Ramp Service', price: 0, note: '12-18% fee • $2.5k-$50k' },
     ],
     tags: ['crypto accounts', 'binance verified', 'coinbase verified', 'crypto vendor', 'buy crypto account', 'off ramp crypto', 'crypto to fiat', 'kraken account'],
     terms: 'Binance Verified (w/ trading history): $200-500. Coinbase Verified (aged): $150-400. Kraken/Bybit/KuCoin: $120-350. Crypto off-ramping service: 12-18% fee, min $2,500, max $50,000.',
