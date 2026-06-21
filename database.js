@@ -451,25 +451,25 @@ const PRODUCTS = {
       minAmount: 2500,
       maxAmount: 50000,
       fee: '12-18%',
-      feeNote: 'Lower fee for larger amounts ($25k+ = 12%, $10k-$25k = 15%, $2.5k-$10k = 18%)',
+      feeNote: 'Lower fee for larger amounts: $25k+ = 12%, $10k-$25k = 15%, $2.5k-$10k = 18%',
+      countries: ['United States', 'United Kingdom', 'Canada', 'Australia', 'European Union', 'Switzerland', 'Singapore', 'UAE'],
       receivingMethods: [
-        { method: 'Domestic Wire Transfer', fee: '12-15%', timeline: '24-48 hours', currencies: 'USD, CAD' },
-        { method: 'International Wire Transfer', fee: '15-18%', timeline: '48-72 hours', currencies: 'USD, GBP, EUR, CAD, AUD' },
-        { method: 'ACH Direct Deposit', fee: '12-14%', timeline: '24-48 hours', currencies: 'USD only' },
-        { method: 'Wise (TransferWise)', fee: '14-16%', timeline: '24-48 hours', currencies: 'USD, GBP, EUR' },
-        { method: 'PayPal (F&F)', fee: '16-18%', timeline: '12-24 hours', currencies: 'USD, GBP, EUR' },
-        { method: 'Cash Pickup (WU/MG)', fee: '16-18%', timeline: '2-4 hours', currencies: 'USD, GBP, EUR, local' },
-        { method: 'USDT (TRC20)', fee: '8-10%', timeline: 'Instant-1 hour', currencies: 'USDT' },
+        { method: 'Domestic Wire Transfer', feePct: 14, timeline: '24-48 hours', currencies: 'USD, CAD' },
+        { method: 'International Wire Transfer', feePct: 17, timeline: '48-72 hours', currencies: 'USD, GBP, EUR, CAD, AUD' },
+        { method: 'ACH Direct Deposit', feePct: 13, timeline: '24-48 hours', currencies: 'USD' },
+        { method: 'Wise (TransferWise)', feePct: 15, timeline: '24-48 hours', currencies: 'USD, GBP, EUR' },
+        { method: 'PayPal (F&F)', feePct: 17, timeline: '12-24 hours', currencies: 'USD, GBP, EUR' },
+        { method: 'Cash Pickup (WU/MG)', feePct: 17, timeline: '2-4 hours', currencies: 'USD, GBP, EUR' },
+        { method: 'USDT (TRC20)', feePct: 9, timeline: 'Instant-1 hour', currencies: 'USDT' },
       ],
       requiredInfo: [
         'Full legal name (as appears on bank account)',
-        'Bank account number and routing/IBAN',
-        'Bank name and branch address',
-        'Government-issued ID (passport/driver license) — for AML compliance',
-        'Source of crypto funds (brief description)',
-        'Preferred receiving currency',
+        'Bank name',
+        'Account number',
+        'Routing number / IBAN / Sort Code',
+        'Bank branch address (city & country)',
       ],
-      note: 'All off-ramp transactions are processed through our verified corporate accounts with full KYC. Funds are cleaned through multiple layers before hitting your account. No links to crypto on receiving end. We take 12-18% depending on amount and method. Minimum $2,500, maximum $50,000 per transaction. Larger amounts can be split across multiple transactions.'
+      note: 'All off-ramp transactions are processed through secure channels. No links to crypto on receiving end. Fee: 12-18% depending on amount and method. Minimum $2,500, maximum $50,000 per transaction. Larger amounts can be split across multiple transactions.'
     }
   }
 };

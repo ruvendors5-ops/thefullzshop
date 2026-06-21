@@ -66,41 +66,120 @@
         <div class="card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.5rem;">
           <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:1rem;"><%= product.offramp.feeNote %></p>
           
-          <h4 style="margin-bottom:0.75rem;color:#fff;">📥 Receiving Methods</h4>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead>
-                <tr><th>Method</th><th>Fee</th><th>Timeline</th><th>Currencies</th></tr>
-              </thead>
-              <tbody>
-                <% product.offramp.receivingMethods.forEach(m => { %>
-                <tr>
-                  <td><%= m.method %></td>
-                  <td style="color:var(--gold);"><%= m.fee %></td>
-                  <td style="color:var(--green);"><%= m.timeline %></td>
-                  <td class="mono"><%= m.currencies %></td>
-                </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-          
-          <h4 style="margin-bottom:0.75rem;margin-top:1.5rem;color:#fff;">📋 Required Information</h4>
-          <ul class="feature-list">
-            <% product.offramp.requiredInfo.forEach(info => { %>
-            <li>✓ <%= info %></li>
-            <% }) %>
-          </ul>
-          
-          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;">
-            <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;"><%= product.offramp.note %></p>
-          </div>
+          <div class="offramp-calculator">
+            <h4 style="color:#fff;margin-bottom:1rem;">🧮 Calculate Your Fee & Place Order</h4>
+            
+            <div class="offramp-row">
+              <div class="offramp-field">
+                <label>Amount to Convert ($)</label>
+                <input type="number" id="offrampAmount" class="form-input" min="2500" max="50000" value="2500" oninput="calcOfframpFee()" onchange="calcOfframpFee()">
+                <span class="field-hint">Min $2,500 — Max $50,000</span>
+              </div>
+              <div class="offramp-field">
+                <label>Receiving Method</label>
+                <select id="offrampMethod" class="form-input" onchange="calcOfframpFee()">
+                  <% product.offramp.receivingMethods.forEach(m => { %>
+                  <option value="<%= m.method %>" data-fee="<%= m.feePct %>"><%= m.method %> — <%= m.feePct %>% fee</option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            
+            <div class="offramp-row">
+              <div class="offramp-field">
+                <label>Currency</label>
+                <select id="offrampCurrency" class="form-input">
+                  <option value="USD">🇺🇸 USD — US Dollar</option>
+                  <option value="GBP">🇬🇧 GBP — British Pound</option>
+                  <option value="EUR">🇪🇺 EUR — Euro</option>
+                  <option value="CAD">🇨🇦 CAD — Canadian Dollar</option>
+                  <option value="AUD">🇦🇺 AUD — Australian Dollar</option>
+                </select>
+              </div>
+              <div class="offramp-field">
+                <label>Country</label>
+                <select id="offrampCountry" class="form-input">
+                  <% product.offramp.countries.forEach(c => { %>
+                  <option value="<%= c %>"><%= c %></option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            
+            <div class="offramp-fee-box" id="offrampFeeBox">
+              <div class="offramp-fee-row">
+                <span>Transfer Amount:</span>
+                <span id="offrampTransferAmt">$2,500.00</span>
+              </div>
+              <div class="offramp-fee-row">
+                <span>Fee Percentage:</span>
+                <span id="offrampFeePct">18%</span>
+              </div>
+              <div class="offramp-fee-row total">
+                <span>You Pay (Fee):</span>
+                <span id="offrampTotalFee">$450.00</span>
+              </div>
+              <div class="offramp-fee-row">
+                <span>BTC Equivalent:</span>
+                <span id="offrampBtcEq">≈ 0.0047 BTC</span>
+              </div>
+            </div>
+            
+            <div class="offramp-divider"></div>
+            
+            <h4 style="color:#fff;margin-bottom:0.75rem;">🏧 Your Banking Details</h4>
+            <div class="offramp-row">
+              <div class="offramp-field">
+                <label>Full Name on Account</label>
+                <input type="text" id="offrampName" class="form-input" placeholder="John Michael Doe" required>
+              </div>
+              <div class="offramp-field">
+                <label>Bank Name</label>
+                <input type="text" id="offrampBank" class="form-input" placeholder="Chase, Barclays, RBC, etc." required>
+              </div>
+            </div>
+            <div class="offramp-row">
+              <div class="offramp-field">
+                <label>Account Number</label>
+                <input type="text" id="offrampAccount" class="form-input" placeholder="Account / IBAN number" required>
+              </div>
+              <div class="offramp-field">
+                <label>Routing / Sort Code / IBAN</label>
+                <input type="text" id="offrampRouting" class="form-input" placeholder="Routing number / Sort Code / SWIFT" required>
+              </div>
+            </div>
+            <div class="offramp-row">
+              <div class="offramp-field">
+                <label>Bank Branch (City, Country)</label>
+                <input type="text" id="offrampBranch" class="form-input" placeholder="e.g. London, United Kingdom" required>
+              </div>
+              <div class="offramp-field">
+                <label>Email for Updates</label>
+                <input type="email" id="offrampEmail" class="form-input" placeholder="your@email.com" required>
+              </div>
+            </div>
 
-          <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
-            <a href="https://t.me/efullz" class="btn btn-primary" target="_blank">📱 Contact @efullz for Off-Ramp</a>
-            <a href="https://t.me/efullz" class="btn btn-outline" target="_blank">₿ Send Crypto Details</a>
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin:1rem 0;">
+              <p style="font-size:0.78rem;color:var(--text-dim);line-height:1.7;"><%= product.offramp.note %></p>
+            </div>
+            
+            <button class="btn btn-primary btn-lg btn-block" onclick="submitOfframp()" id="offrampBtn">
+              💰 Pay Fee of <span id="offrampBtnFee">$450.00</span> in BTC — Process Transfer
+            </button>
           </div>
         </div>
+        
+        <style>
+          .offramp-calculator { max-width: 640px; }
+          .offramp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+          .offramp-field label { display: block; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+          .field-hint { display: block; font-size: 0.7rem; color: var(--text-dim); margin-top: 0.2rem; }
+          .offramp-fee-box { background: var(--bg-card); border: 1px solid var(--gold); border-radius: var(--radius-sm); padding: 1rem; margin: 1rem 0; }
+          .offramp-fee-row { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.85rem; color: var(--text-secondary); }
+          .offramp-fee-row.total { border-top: 1px solid var(--border); margin-top: 0.3rem; padding-top: 0.7rem; font-size: 1rem; font-weight: 700; color: var(--gold); }
+          .offramp-divider { border-top: 1px solid var(--border); margin: 1.25rem 0; }
+          @media (max-width: 600px) { .offramp-row { grid-template-columns: 1fr; } }
+        </style>
         <% } %>
 
         <!-- Bulk Pricing (with optional country selector) -->
@@ -126,16 +205,16 @@
               <div class="bulk-label"><%= bp.label %></div>
               <div class="bulk-price">$<%= bp.price.toLocaleString() %></div>
               <div class="bulk-per"><%= bp.per %></div>
-              <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Buy Now</a>
+              <button class="btn btn-sm btn-outline" onclick="openCheckout('<%= product.id %>', '<%= bp.label %>', <%= bp.price %>)">Buy Now</button>
             </div>
             <% }) %>
           </div>
-          <% } %>
-        </div>
+        <% } %>
         <!-- Store all country data for JS switching -->
         <script>
           window.bulkByCountry = <%- JSON.stringify(product.bulkByCountry) %>;
         </script>
+        </div>
         <% } else if (product.bulkPricing) { %>
         <div class="section-subheader" style="margin-top:2rem;">
           <h2>📦 Bulk / Wholesale Pricing</h2>
@@ -147,7 +226,7 @@
             <div class="bulk-label"><%= bp.label %></div>
             <div class="bulk-price">$<%= bp.price.toLocaleString() %></div>
             <div class="bulk-per"><%= bp.per %></div>
-            <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Buy Now</a>
+            <button class="btn btn-sm btn-outline" onclick="openCheckout('<%= product.id %>', '<%= bp.label %>', <%= bp.price %>)">Buy Now</button>
           </div>
           <% }) %>
         </div>
@@ -166,7 +245,7 @@
             <div class="bulk-label"><%= sp.label %></div>
             <div class="bulk-price">$<%= sp.price.toLocaleString() %></div>
             <div class="bulk-per"><%= sp.per %></div>
-            <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Buy <%= sp.qty %></a>
+            <button class="btn btn-sm btn-outline" onclick="openCheckout('<%= product.id %>', '<%= sp.label %>', <%= sp.price %>)">Buy Now</button>
           </div>
           <% }) %>
         </div>
@@ -398,11 +477,106 @@ function switchBulkCountry() {
         <div class="bulk-label">${bp.label}</div>
         <div class="bulk-price">$${bp.price.toLocaleString()}</div>
         <div class="bulk-per">${bp.per}</div>
-        <a href="https://t.me/efullz" class="btn btn-sm btn-outline" target="_blank">Buy Now</a>
+        <button class="btn btn-sm btn-outline" onclick="openCheckout(window.productId, '${bp.label}', ${bp.price})">Buy Now</button>
       </div>
     `).join('') +
   '</div>';
 }
+
+// ── Off-Ramp Calculator ──
+function calcOfframpFee() {
+  const amtInput = document.getElementById('offrampAmount');
+  const methodSel = document.getElementById('offrampMethod');
+  if (!amtInput || !methodSel) return;
+
+  let amount = parseFloat(amtInput.value) || 0;
+  if (amount < 2500) amount = 2500;
+  if (amount > 50000) amount = 50000;
+  amtInput.value = amount;
+
+  const feePct = parseInt(methodSel.options[methodSel.selectedIndex].dataset.fee) || 18;
+  // Adjust fee based on amount tiers
+  let effectiveFee = feePct;
+  if (amount >= 25000) effectiveFee = Math.min(feePct, 12);
+  else if (amount >= 10000) effectiveFee = Math.min(feePct, 15);
+  
+  const totalFee = (amount * effectiveFee / 100);
+  const btcRate = 95000; // approximate BTC/USD rate
+  const btcEq = (totalFee / btcRate).toFixed(8);
+
+  document.getElementById('offrampTransferAmt').textContent = '$' + amount.toLocaleString('en-US', {minimumFractionDigits: 2});
+  document.getElementById('offrampFeePct').textContent = effectiveFee + '%';
+  document.getElementById('offrampTotalFee').textContent = '$' + totalFee.toLocaleString('en-US', {minimumFractionDigits: 2});
+  document.getElementById('offrampBtcEq').textContent = '≈ ' + btcEq + ' BTC';
+  document.getElementById('offrampBtnFee').textContent = '$' + totalFee.toLocaleString('en-US', {minimumFractionDigits: 2});
+  
+  // Store for submission
+  window._offrampData = { transferAmount: amount, feePct: effectiveFee, totalFee, btcEq };
+}
+
+// ── Submit Off-Ramp Order ──
+function submitOfframp() {
+  const fields = {
+    name: document.getElementById('offrampName'),
+    bank: document.getElementById('offrampBank'),
+    account: document.getElementById('offrampAccount'),
+    routing: document.getElementById('offrampRouting'),
+    branch: document.getElementById('offrampBranch'),
+    email: document.getElementById('offrampEmail')
+  };
+  
+  // Validate
+  for (const [key, el] of Object.entries(fields)) {
+    if (!el || !el.value.trim()) {
+      alert('Please fill in all banking details fields.');
+      if (el) el.focus();
+      return;
+    }
+  }
+  
+  if (!window._offrampData || window._offrampData.totalFee < 10) {
+    alert('Please check the amount - minimum fee is $10.');
+    return;
+  }
+
+  // Set custom requirements for checkout
+  window.productRequirements = [
+    { key: 'name', label: 'Full Name on Account', type: 'text', placeholder: 'John Doe', required: true },
+    { key: 'bank', label: 'Bank Name', type: 'text', placeholder: 'Bank name', required: true },
+    { key: 'account', label: 'Account Number / IBAN', type: 'text', placeholder: 'Account number', required: true },
+    { key: 'routing', label: 'Routing / Sort Code', type: 'text', placeholder: 'Routing number', required: true },
+    { key: 'branch', label: 'Bank Branch (City, Country)', type: 'text', placeholder: 'Branch location', required: true },
+    { key: 'offramp_email', label: 'Email for Updates', type: 'email', placeholder: 'your@email.com', required: true },
+  ];
+  
+  // Pre-fill the fields in the checkout modal
+  setTimeout(() => {
+    const fillField = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) { el.value = value; }
+    };
+    fillField('cf_name', fields.name.value.trim());
+    fillField('cf_bank', fields.bank.value.trim());
+    fillField('cf_account', fields.account.value.trim());
+    fillField('cf_routing', fields.routing.value.trim());
+    fillField('cf_branch', fields.branch.value.trim());
+    fillField('cf_offramp_email', fields.email.value.trim());
+    // Put transfer details in notes
+    const notes = document.getElementById('cf_notes');
+    if (notes) {
+      notes.value = `OFF-RAMP: $${window._offrampData.transferAmount} via ${document.getElementById('offrampMethod').value} | ${document.getElementById('offrampCurrency').value} | ${document.getElementById('offrampCountry').value}`;
+    }
+  }, 50);
+
+  openCheckout(window.productId || 'cloned', 'Crypto Off-Ramp', window._offrampData.totalFee);
+}
+
+// Initialize calculator on page load
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('offrampAmount')) {
+    setTimeout(calcOfframpFee, 100);
+  }
+});
 
 // Copy sample data to clipboard
 function copySample(idx) {
