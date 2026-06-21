@@ -429,23 +429,48 @@ const PRODUCTS = {
     id: 'cloned',
     name: 'CRYPTO SERVICES',
     subtitle: 'Verified Exchange Accounts & Off-Ramp Service',
-    shortDesc: 'Binance, Coinbase, Kraken verified accounts. Crypto off-ramping.',
-    longDesc: `Verified cryptocurrency exchange accounts with trading history. Binance verified accounts with transaction history. Coinbase verified aged accounts. Kraken, Bybit, and KuCoin accounts available. Crypto off-ramping service to convert crypto to fiat (12-18% fee depending on amount and jurisdiction).`,
+    shortDesc: 'Binance, Coinbase, Kraken verified accounts. Crypto off-ramping $2.5k-$50k.',
+    longDesc: `Verified cryptocurrency exchange accounts with trading history. Binance verified accounts with transaction history. Coinbase verified aged accounts. Kraken, Bybit, and KuCoin accounts available. Crypto off-ramping service to convert crypto to fiat. Minimum $2,500, maximum $50,000 per transaction. Multiple receiving methods and currencies available.`,
     price: 120,
     priceLabel: 'From $120',
     variants: [
       { label: 'Binance Verified (w/ History)', price: 200, note: '$200-500' },
       { label: 'Coinbase Verified (Aged)', price: 150, note: '$150-400' },
       { label: 'Kraken / Bybit / KuCoin', price: 120, note: '$120-350' },
-      { label: 'Crypto Off-Ramp Service', price: 0, note: '12-18% fee' },
+      { label: 'Crypto Off-Ramp Service', price: 0, note: '12-18% fee • $2.5k-$50k' },
     ],
     tags: ['crypto accounts', 'binance verified', 'coinbase verified', 'crypto vendor', 'buy crypto account', 'off ramp crypto', 'crypto to fiat', 'kraken account'],
-    terms: 'Binance Verified (w/ trading history): $200-500. Coinbase Verified (aged): $150-400. Kraken/Bybit/KuCoin: $120-350. Crypto off-ramping service: 12-18% fee.',
-    deliveryTime: 'Digital accounts: instant delivery. Off-ramp service: 24-48 hours depending on amount.',
+    terms: 'Binance Verified (w/ trading history): $200-500. Coinbase Verified (aged): $150-400. Kraken/Bybit/KuCoin: $120-350. Crypto off-ramping service: 12-18% fee, min $2,500, max $50,000.',
+    deliveryTime: 'Digital accounts: instant delivery. Off-ramp service: 24-72 hours depending on amount.',
     requirements: [
       { key: 'email', label: 'Email for Delivery / Communication', type: 'email', placeholder: 'your@email.com', required: true },
       { key: 'service_type', label: 'Service Type', type: 'select', options: ['Binance Account', 'Coinbase Account', 'Kraken/Bybit/KuCoin', 'Crypto Off-Ramp'], required: true }
-    ]
+    ],
+    // Off-ramp specific details
+    offramp: {
+      minAmount: 2500,
+      maxAmount: 50000,
+      fee: '12-18%',
+      feeNote: 'Lower fee for larger amounts ($25k+ = 12%, $10k-$25k = 15%, $2.5k-$10k = 18%)',
+      receivingMethods: [
+        { method: 'Domestic Wire Transfer', fee: '12-15%', timeline: '24-48 hours', currencies: 'USD, CAD' },
+        { method: 'International Wire Transfer', fee: '15-18%', timeline: '48-72 hours', currencies: 'USD, GBP, EUR, CAD, AUD' },
+        { method: 'ACH Direct Deposit', fee: '12-14%', timeline: '24-48 hours', currencies: 'USD only' },
+        { method: 'Wise (TransferWise)', fee: '14-16%', timeline: '24-48 hours', currencies: 'USD, GBP, EUR' },
+        { method: 'PayPal (F&F)', fee: '16-18%', timeline: '12-24 hours', currencies: 'USD, GBP, EUR' },
+        { method: 'Cash Pickup (WU/MG)', fee: '16-18%', timeline: '2-4 hours', currencies: 'USD, GBP, EUR, local' },
+        { method: 'USDT (TRC20)', fee: '8-10%', timeline: 'Instant-1 hour', currencies: 'USDT' },
+      ],
+      requiredInfo: [
+        'Full legal name (as appears on bank account)',
+        'Bank account number and routing/IBAN',
+        'Bank name and branch address',
+        'Government-issued ID (passport/driver license) — for AML compliance',
+        'Source of crypto funds (brief description)',
+        'Preferred receiving currency',
+      ],
+      note: 'All off-ramp transactions are processed through our verified corporate accounts with full KYC. Funds are cleaned through multiple layers before hitting your account. No links to crypto on receiving end. We take 12-18% depending on amount and method. Minimum $2,500, maximum $50,000 per transaction. Larger amounts can be split across multiple transactions.'
+    }
   }
 };
 

@@ -403,6 +403,42 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // ── Live Stats ──
+  // Randomize initial stats so each visit looks different
+  function jitterStats() {
+    // Jitter completed orders: +0 to +47 (so it never starts at exact 2212)
+    const jitter = Math.floor(Math.random() * 48);
+    const completedEls = [
+      document.getElementById('footerCompleted'),
+      document.getElementById('completedCount')
+    ];
+    completedEls.forEach(el => {
+      if (el) {
+        const val = parseInt(el.textContent.replace(/,/g, '')) || 0;
+        el.textContent = (val + jitter).toLocaleString();
+      }
+    });
+    // Jitter total orders same way
+    const totalEls = [
+      document.getElementById('footerOrders'),
+      document.getElementById('orderCount'),
+      document.getElementById('heroOrders')
+    ];
+    totalEls.forEach(el => {
+      if (el) {
+        const val = parseInt(el.textContent.replace(/,/g, '')) || 0;
+        el.textContent = (val + jitter).toLocaleString();
+      }
+    });
+    // Randomize initial active users (not always 14)
+    const hour = new Date().getHours();
+    let base = 7;
+    if (hour >= 10 && hour <= 22) base = 11;
+    if (hour >= 18 && hour <= 23) base = 14;
+    const active = Math.floor(Math.random() * 7) + base;
+    const activeEls = [document.getElementById('activeNow'), document.getElementById('footerActive')];
+    activeEls.forEach(el => { if (el) el.textContent = active; });
+  }
+
   // Animate counters on page load
   function animateCounter(el) {
     if (!el) return;
@@ -417,10 +453,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   setTimeout(() => {
+    jitterStats(); // randomize initial values first
     animateCounter(document.getElementById('orderCount'));
     animateCounter(document.getElementById('completedCount'));
     animateCounter(document.getElementById('heroOrders'));
-  }, 300);
+  }, 200);
 
   // ── Realistic fluctuating stats ──
   // Orders completed ticker — increments 5-9 times per day simulation
