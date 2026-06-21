@@ -101,7 +101,26 @@ async function build() {
   fs.writeFileSync(path.join(DIST, '404.html'), notFoundHtml);
   console.log('  ✓ 404');
 
-  console.log(`\n  ── Complete: ${pages.length + 3} pages generated — ready for Netlify ──\n`);
+  // ── Generate sitemap.xml ──
+  const SITE_URL = 'https://thefullz.shop';
+  const today = new Date().toISOString().split('T')[0];
+  const allRoutes = [
+    { route: '', priority: '1.0', changefreq: 'weekly' },
+    ...pages.map(id => ({ route: id, priority: '0.8', changefreq: 'weekly' })),
+    { route: 'order', priority: '0.3', changefreq: 'monthly' }
+  ];
+  
+  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  sitemap += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  for (const r of allRoutes) {
+    const loc = r.route === '' ? SITE_URL : `${SITE_URL}/${r.route}/`;
+    sitemap += `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>\n`;
+  }
+  sitemap += `</urlset>\n`;
+  fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap);
+  console.log('  ✓ sitemap.xml');
+
+  console.log(`\n  ── Complete: ${pages.length + 3} pages generated + sitemap — ready for Netlify ──\n`);
 }
 
 build().catch(err => { console.error('Build failed:', err); process.exit(1); });

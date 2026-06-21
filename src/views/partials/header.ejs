@@ -8,7 +8,7 @@
   <% if (typeof seo !== 'undefined' && seo.keywords) { %>
   <meta name="keywords" content="<%= seo.keywords %>">
   <% } %>
-  <meta name="robots" content="noindex, nofollow">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://thefullz.shop/<%= typeof pageId !== 'undefined' && pageId ? pageId : '' %>">
 
   <!-- Google tag (gtag.js) -->
