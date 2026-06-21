@@ -521,6 +521,8 @@ window.openWUCheckout = function(productId, methodKey, label, price) {
   if (group) {
     window.productRequirements = JSON.parse(JSON.stringify(group.fields));
   }
+  // Reset cached requirements so openCheckout backs up the new fields fresh
+  if (window.resetCheckoutRequirements) window.resetCheckoutRequirements();
   openCheckout(productId, label, price);
 };
 <% } %>

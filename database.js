@@ -448,7 +448,7 @@ const PRODUCTS = {
         fields: [
           { key: 'full_name', label: 'Your Full Legal Name', type: 'text', placeholder: 'As appears on bank account', required: true },
           { key: 'bank_name', label: 'Bank Name', type: 'text', placeholder: 'Name of receiving bank', required: true },
-          { key: 'account_number', label: 'Account Number / IBAN', type: 'text', placeholder: 'Account number or IBAN', required: true },
+          { key: 'iban', label: 'IBAN', type: 'text', placeholder: 'International Bank Account Number', required: true },
           { key: 'swift_code', label: 'SWIFT / BIC Code', type: 'text', placeholder: 'e.g. CHASUS33', required: true },
           { key: 'country', label: 'Bank Country', type: 'text', placeholder: 'e.g. United Kingdom', required: true },
           { key: 'email', label: 'Email (for order updates)', type: 'email', placeholder: 'your@email.com', required: true },

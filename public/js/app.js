@@ -106,6 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCheckout = { product: null, variant: null, price: 0 };
   let originalProductRequirements = null;
 
+  // Allow WU method groups to reset requirements cache so dynamic fields switch cleanly
+  window.resetCheckoutRequirements = function() {
+    originalProductRequirements = null;
+  };
+
   // Render dynamic checkout fields based on product requirements
   function renderCheckoutFields(requirements) {
     const container = document.getElementById('checkoutFields');
