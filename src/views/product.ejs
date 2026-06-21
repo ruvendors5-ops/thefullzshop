@@ -116,20 +116,20 @@
             
             <div class="offramp-fee-box" id="offrampFeeBox">
               <div class="offramp-fee-row">
-                <span>Transfer Amount:</span>
-                <span class="offramp-val" id="offrampTransferAmt">$2,500.00</span>
+                <span>You Receive:</span>
+                <span class="offramp-val" style="color:var(--green);font-weight:600;" id="offrampReceiveAmt">$2,500.00</span>
               </div>
               <div class="offramp-fee-row">
                 <span>Fee (<span id="offrampFeePct">18</span>%):</span>
                 <span class="offramp-val" id="offrampTotalFee">$450.00</span>
               </div>
               <div class="offramp-fee-row total">
-                <span>Total in BTC:</span>
-                <span class="offramp-val" id="offrampBtcEq">≈ 0.0047 BTC</span>
+                <span>Total to Pay:</span>
+                <span class="offramp-val" id="offrampTransferAmt">$2,950.00</span>
               </div>
               <div class="offramp-fee-row">
-                <span>You Receive:</span>
-                <span class="offramp-val" style="color:var(--green);" id="offrampReceiveAmt">$2,050.00</span>
+                <span>Total in BTC:</span>
+                <span class="offramp-val" id="offrampBtcEq">≈ 0.0310 BTC</span>
               </div>
             </div>
             
@@ -172,7 +172,7 @@
             </div>
             
             <button class="btn btn-primary btn-lg btn-block" onclick="submitOfframp()" id="offrampBtn">
-              💰 Pay Fee: <span id="offrampBtnFee">$450.00</span> (<span id="offrampBtnBtc">≈ 0.0047 BTC</span>) — Process Transfer →
+              💰 Pay <span id="offrampBtnFee">$2,950.00</span> (<span id="offrampBtnBtc">≈ 0.0310 BTC</span>) — Process Transfer →
             </button>
           </div>
         </div>
@@ -497,43 +497,73 @@ function switchBulkCountry() {
 }
 
 // ── Off-Ramp Calculator ──
+let _cachedBtcRate = null;
+let _btcRateFetching = false;
+
+async function fetchBtcRate() {
+  if (_cachedBtcRate) return _cachedBtcRate;
+  if (_btcRateFetching) return 95000; // use estimate while fetching
+  _btcRateFetching = true;
+  try {
+    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+    const data = await resp.json();
+    _cachedBtcRate = data.bitcoin.usd;
+    setTimeout(() => { _cachedBtcRate = null; }, 120000); // re-fetch every 2 min
+    return _cachedBtcRate;
+  } catch {
+    return 95000; // fallback estimate
+  } finally {
+    _btcRateFetching = false;
+  }
+}
+
 function setOfframpAmount(val) {
   const input = document.getElementById('offrampAmount');
   if (input) { input.value = val; calcOfframpFee(); }
 }
 
-function calcOfframpFee() {
+async function calcOfframpFee() {
   const amtInput = document.getElementById('offrampAmount');
   const methodSel = document.getElementById('offrampMethod');
   if (!amtInput || !methodSel) return;
 
-  let amount = parseFloat(amtInput.value) || 0;
-  if (amount < 2500) amount = 2500;
-  if (amount > 50000) amount = 50000;
-  amtInput.value = amount;
+  let receiveAmt = parseFloat(amtInput.value) || 0;
+  if (receiveAmt < 2500) receiveAmt = 2500;
+  if (receiveAmt > 50000) receiveAmt = 50000;
+  amtInput.value = receiveAmt;
 
   const feePct = parseInt(methodSel.options[methodSel.selectedIndex].dataset.fee) || 18;
   // Adjust fee based on amount tiers
   let effectiveFee = feePct;
-  if (amount >= 25000) effectiveFee = Math.min(feePct, 12);
-  else if (amount >= 10000) effectiveFee = Math.min(feePct, 15);
+  if (receiveAmt >= 25000) effectiveFee = Math.min(feePct, 12);
+  else if (receiveAmt >= 10000) effectiveFee = Math.min(feePct, 15);
   
-  const totalFee = (amount * effectiveFee / 100);
-  const btcRate = 95000; // approximate BTC/USD rate
-  const btcEq = (totalFee / btcRate).toFixed(8);
-  const receiveAmt = amount - totalFee;
+  // Option B: fee is added ON TOP of what user wants to receive
+  const fee = (receiveAmt * effectiveFee / 100);
+  const totalUsd = receiveAmt + fee;
+
+  // Get live BTC rate
+  const btcRate = await fetchBtcRate();
+  const btcTotal = (totalUsd / btcRate).toFixed(8);
 
   const fmt = (n) => '$' + n.toLocaleString('en-US', {minimumFractionDigits: 2});
-  document.getElementById('offrampTransferAmt').textContent = fmt(amount);
-  document.getElementById('offrampFeePct').textContent = effectiveFee;
-  document.getElementById('offrampTotalFee').textContent = fmt(totalFee);
-  document.getElementById('offrampBtcEq').textContent = '≈ ' + btcEq + ' BTC';
   document.getElementById('offrampReceiveAmt').textContent = fmt(receiveAmt);
-  document.getElementById('offrampBtnFee').textContent = fmt(totalFee);
-  document.getElementById('offrampBtnBtc').textContent = '≈ ' + btcEq + ' BTC';
+  document.getElementById('offrampFeePct').textContent = effectiveFee;
+  document.getElementById('offrampTotalFee').textContent = fmt(fee);
+  document.getElementById('offrampTransferAmt').textContent = fmt(totalUsd);
+  document.getElementById('offrampBtcEq').textContent = '≈ ' + btcTotal + ' BTC';
+  document.getElementById('offrampBtnFee').textContent = fmt(totalUsd);
+  document.getElementById('offrampBtnBtc').textContent = '≈ ' + btcTotal + ' BTC';
   
   // Store for submission
-  window._offrampData = { transferAmount: amount, feePct: effectiveFee, totalFee, btcEq, receiveAmt };
+  window._offrampData = { 
+    transferAmount: totalUsd,  // total USD to pay
+    receiveAmt,                // what they get in bank
+    feePct: effectiveFee, 
+    totalFee: fee, 
+    totalUsd, 
+    btcTotal 
+  };
 }
 
 // ── Submit Off-Ramp Order ──
@@ -591,11 +621,12 @@ function submitOfframp() {
     fillField('cf_offramp_email', fields.email.value.trim());
     const notes = document.getElementById('cf_notes');
     if (notes) {
-      notes.value = `OFF-RAMP: Transfer ${fmt(d.transferAmount)} → ${currency} via ${method} (${country}) | Fee: ${fmt(d.totalFee)} (${d.feePct}%) | You receive: ${fmt(d.receiveAmt)} | BTC: ${d.btcEq}`;
+      notes.value = `OFF-RAMP: Receive ${fmt(d.receiveAmt)} via ${method} (${currency}/${country}) | Fee: ${d.feePct}% (${fmt(d.totalFee)}) | Total paid: ${d.btcTotal} BTC`;
     }
   }, 50);
 
-  openCheckout(window.productId || 'cloned', 'Crypto Off-Ramp', d.totalFee);
+  // Pass totalUsd as the price (this is what user pays in BTC equivalent)
+  openCheckout(window.productId || 'cloned', 'Crypto Off-Ramp', d.totalUsd);
 
   // Override the generic order summary with a detailed off-ramp breakdown
   const methodEl = document.getElementById('offrampMethod');
@@ -606,8 +637,8 @@ function submitOfframp() {
       <span class="os-value">Crypto Off-Ramp</span>
     </div>
     <div class="os-row">
-      <span class="os-label">Transfer Amount</span>
-      <span class="os-value">${fmt(d.transferAmount)}</span>
+      <span class="os-label">You Receive</span>
+      <span class="os-value" style="color:var(--green);font-weight:600;">${fmt(d.receiveAmt)}</span>
     </div>
     <div class="os-row">
       <span class="os-label">Receiving Method</span>
@@ -617,17 +648,17 @@ function submitOfframp() {
       <span class="os-label">Currency / Country</span>
       <span class="os-value">${currency} → ${country}</span>
     </div>
-    <div class="os-row">
+    <div class="os-row" style="border-top:1px solid var(--border);margin-top:0.4rem;padding-top:0.8rem;">
       <span class="os-label">Fee (${d.feePct}%)</span>
       <span class="os-value">${fmt(d.totalFee)}</span>
     </div>
-    <div class="os-row" style="border-top:1px solid var(--border);margin-top:0.4rem;padding-top:0.8rem;">
-      <span class="os-label">Fee in BTC</span>
-      <span class="os-value" style="color:var(--gold);font-weight:700;">≈ ${d.btcEq} BTC</span>
+    <div class="os-row" style="font-weight:700;color:var(--gold);">
+      <span class="os-label">Total to Pay</span>
+      <span class="os-value">${fmt(d.totalUsd)}</span>
     </div>
-    <div class="os-row" style="font-size:0.82rem;color:var(--green);">
-      <span class="os-label">You Will Receive</span>
-      <span class="os-value">${fmt(d.receiveAmt)}</span>
+    <div class="os-row">
+      <span class="os-label">Total in BTC</span>
+      <span class="os-value">${d.btcTotal} BTC</span>
     </div>
   `;
 }
@@ -635,7 +666,7 @@ function submitOfframp() {
 // Initialize calculator on page load
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('offrampAmount')) {
-    setTimeout(calcOfframpFee, 100);
+    setTimeout(() => calcOfframpFee(), 100);
   }
 });
 

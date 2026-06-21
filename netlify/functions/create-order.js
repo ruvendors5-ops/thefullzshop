@@ -68,6 +68,14 @@ exports.handler = async (event) => {
       };
     } else {
       // ── DEMO MODE: Fake BTC address for testing ──
+      // Fetch live BTC rate even in demo for accurate display
+      let btcRate = 95000;
+      try {
+        const rateResp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const rateData = await rateResp.json();
+        if (rateData.bitcoin && rateData.bitcoin.usd) btcRate = rateData.bitcoin.usd;
+      } catch {}
+      
       const demoAddresses = [
         '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
         '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
@@ -83,7 +91,7 @@ exports.handler = async (event) => {
           orderId,
           paymentId: 'demo_' + orderId,
           payAddress: demoAddresses[Math.floor(Math.random() * demoAddresses.length)],
-          payAmount: (price / 95000).toFixed(8), // ~$95k BTC rate
+          payAmount: (price / btcRate).toFixed(8),
           payCurrency: 'BTC',
           priceAmount: price,
           priceCurrency: 'USD',
